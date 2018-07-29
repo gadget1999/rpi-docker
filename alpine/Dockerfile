@@ -5,7 +5,7 @@ LABEL Description="Base Alpine image for Raspberry Pi"
 
 ARG TIMEZONE=America/New_York
 
-COPY /usr/bin/qemu-arm-static /usr/bin/qemu-arm-static
+COPY qemu-arm-static /usr/bin/qemu-arm-static
 
 RUN apk add --update --no-cache bash tzdata htop nano && \
     cp "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" > /etc/timezone && \    
