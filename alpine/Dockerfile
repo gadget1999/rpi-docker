@@ -1,4 +1,4 @@
-FROM arm32v6/alpine:edge
+FROM arm32v7/alpine:latest
 
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Base Alpine image for Raspberry Pi"
