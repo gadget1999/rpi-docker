@@ -9,4 +9,6 @@ RUN apt-get -y update && apt-get -y install htop nano supervisor && \
     cp "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" > /etc/timezone && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_*
 
+ADD ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 CMD ["/usr/bin/supervisord"]
