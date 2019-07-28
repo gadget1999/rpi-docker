@@ -5,8 +5,8 @@ LABEL Description="Base Debian image with Supervisor"
 
 ARG TIMEZONE=America/New_York
 
-RUN apt-get --update --no-cache htop nano supervisor && \
-    cp "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" > /etc/timezone && \    
-    rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
+RUN apt-get -y update && apt-get -y install htop nano supervisor && \
+    cp "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" > /etc/timezone && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_*
 
 CMD ["/usr/bin/supervisord"]
