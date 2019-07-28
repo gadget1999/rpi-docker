@@ -1,4 +1,4 @@
-FROM debian:latest
+FROM arm32v7/debian:buster-slim
 
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Base Debian image with Supervisor"
