@@ -19,6 +19,6 @@ RUN apt-get -y update && apt-get -y install \
     apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_*
 
 ADD ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-ADD ./get-cmds.sh /tmp/get-cmds.sh
+ADD ./get-cmds.sh /usr/local/bin/get-cmds.sh
 
 CMD ["/usr/bin/supervisord"]
