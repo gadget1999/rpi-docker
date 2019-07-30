@@ -16,8 +16,8 @@ RUN apt-get -y update && apt-get -y install \
     cp "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" > /etc/timezone && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_*
 
-ADD ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+ADD ./entrypoint.sh /user/bin/entrypoint.sh
 ADD ./get-cmds.sh /usr/local/bin/get-cmds.sh
-RUN chmod +x /usr/local/bin/get-cmds.sh
+RUN chmod +x /user/bin/entrypoint.sh /usr/local/bin/get-cmds.sh
 
-CMD ["/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/entrypoint.sh"]
