@@ -9,11 +9,9 @@ RUN apt-get -y update && apt-get -y install \
     # docker specific
     supervisor cron \
     # base packages
-    curl deborphan htop mc nano ncdu p7zip screen sudo wget unzip \
+    curl deborphan htop mc nano ncdu p7zip sudo wget unzip \
     # mqtt, firebase, acme.sh, ddns
     dnsutils jq mosquitto-clients socat \
-    # pyload, pyby, pybox
-    python python-requests python-poster python-mechanize python-openssl \    
     && \
     cp "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" > /etc/timezone && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_*
