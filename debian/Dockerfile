@@ -7,7 +7,7 @@ ARG TIMEZONE=America/New_York
 
 RUN apt-get -y update && apt-get -y install \
     # docker specific
-    supervisor cron \
+    cron \
     # base packages
     htop nano wget unzip \
     # mqtt, firebase, acme.sh, ddns
