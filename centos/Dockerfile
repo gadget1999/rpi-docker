@@ -16,5 +16,6 @@ RUN yum -y update && \
 
 ADD ./supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 ADD ./get-cmds.sh /usr/local/bin/get-cmds.sh
+RUN chmod +x /usr/local/bin/get-cmds.sh
 
 CMD ["/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"]
