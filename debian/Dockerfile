@@ -20,4 +20,4 @@ ADD ./start.sh /user/local/bin/start.sh
 ADD ./get-cmds.sh /usr/local/bin/get-cmds.sh
 RUN chmod +x /user/local/bin/start.sh /usr/local/bin/get-cmds.sh
 
-CMD ["/usr/local/bin/start.sh"]
+CMD ["bash", "/usr/local/bin/start.sh"]
