@@ -1,49 +1,76 @@
-FROM arm32v7/debian:buster-slim
+FROM arm32v7/alpine:latest
 
-RUN apt-get update && apt-get install -y python \
-	locales \
-	python-setuptools \
-	python-requests \
-	python-pycurl \
-	python-crypto \
-	python-imaging \
-	python-pyxmpp \
-	python-jinja2 \
-	python-thrift \
-	python-feedparser \
-	python-beautifulsoup \
-	python-pip \
-	tesseract-ocr \
-	python-beaker \
-	unrar \
-	curl \
-	gocr \
-	python-django \
-	git \
-	rhino \
-	gosu \
-	&& apt-get clean \
-	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-	&& pip install Send2Trash
+### Environment variables
+ENV LANG='en_US.UTF-8' \
+    LANGUAGE='en_US.UTF-8' \
+    TERM='xterm' \
+    PYCURL_SSL_LIBRARY='openssl'
 
-# Set the locale
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
+### Install Application
+RUN apk --no-cache upgrade && \
+    apk add --no-cache --virtual=build-deps \
+      make \
+      gcc \
+      g++ \
+      python3-dev \
+      py3-pip \
+      libressl-dev \
+      curl-dev \
+      musl-dev \
+      libffi-dev \
+      jpeg-dev \
+      git \
+      zlib-dev \
+      py3-openssl \
+      py3-crypto \
+      py3-pillow \
+      py3-jinja2 \
+      py3-curl \
+      tesseract-ocr && \
 
-RUN git clone https://github.com/pyload/pyload.git /opt/pyload \
-        && cd /opt/pyload \
-        && git checkout stable \
-        && echo "/opt/pyload/pyload-config" > /opt/pyload/module/config/configdir
+    # ensure pip is installed on python3
+    python3 -m ensurepip && \
+    rm -r /usr/lib/python*/ensurepip && \
+    pip3 install --upgrade pip setuptools && \
+    if [ ! -e /usr/bin/pip ]; then \
+      ln -s pip3 /usr/bin/pip ; \
+    fi && \
+    rm -r /root/.cache && \
 
-ADD pyload-config/ /tmp/pyload-config
-ADD run.sh /run.sh
-RUN chmod +x /run.sh
+    if [ ! -e /usr/bin/python ]; then \
+      ln -s python3 /usr/bin/python ; \
+    fi && \
+    pip --no-cache-dir install --upgrade setuptools && \
+    pip --no-cache-dir install --upgrade \
+      spidermonkey \
+      tesseract \
+      feedparser \
+      BeautifulSoup4 \
+      thrift \
+      beaker && \
+    git clone --depth 1 https://github.com/pyload/pyload.git -b stable /opt/pyload && \
+    apk del --no-cache --purge \
+      build-deps  && \
+    apk add --no-cache --virtual=run-deps \
+      python3 \
+      ssmtp \
+      mailx \
+      libffi \
+      libcurl \
+      jpeg \
+      unrar \
+      unzip \
+      p7zip \
+      zlib \
+      su-exec && \
+    rm -rf /tmp/* \
+           /opt/pyload/.git \
+           /var/cache/apk/*  \
+           /var/tmp/*
 
-EXPOSE 8000
-VOLUME /opt/pyload/pyload-config
-VOLUME /opt/pyload/Downloads
+### Volume
+VOLUME ["/downloads","/config"]
 
-HEALTHCHECK CMD curl --fail http://localhost:8000/ || exit 1
-CMD ["/run.sh"]
+EXPOSE 8000 7227 9666
+
+CMD ["/usr/bin/python /opt/pyload/pyLoadCore.py --configdir=/config"]
