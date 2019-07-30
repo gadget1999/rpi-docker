@@ -16,8 +16,8 @@ RUN apt-get -y update && apt-get -y install \
     cp "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" > /etc/timezone && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_*
 
-ADD ./start.sh /user/local/bin/start.sh
+ADD ./start.sh /usr/local/bin/start.sh
 ADD ./get-cmds.sh /usr/local/bin/get-cmds.sh
-RUN chmod +x /user/local/bin/start.sh /usr/local/bin/get-cmds.sh
+RUN chmod +x /usr/local/bin/start.sh /usr/local/bin/get-cmds.sh
 
-CMD ["bash", "/usr/local/bin/start.sh"]
+CMD ["/usr/local/bin/start.sh"]
