@@ -10,4 +10,5 @@
 trap 'exit 0' SIGTERM
 
 # block forever
-read forever
+touch /tmp/forever
+tail -f /tmp/forever
