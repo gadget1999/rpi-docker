@@ -17,7 +17,7 @@ RUN apt-get -y update && apt-get -y install \
     apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_*
 
 ADD ./entrypoint /entrypoint
-ADD ./get-cmds.sh /usr/local/bin/get-cmds.sh
-RUN chmod +x /entrypoint /usr/local/bin/get-cmds.sh
+ADD ./init-cmds /usr/local/bin/init-cmds
+RUN chmod +x /entrypoint /usr/local/bin/init-cmds
 
 CMD ["/entrypoint"]

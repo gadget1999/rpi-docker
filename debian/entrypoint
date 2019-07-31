@@ -3,5 +3,8 @@
 # start cron first
 /usr/sbin/cron
 
+# initialize commands
+/usr/local/bin/init-cmds
+
 # block forever
 sleep infinity
