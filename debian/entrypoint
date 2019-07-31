@@ -8,3 +8,9 @@
 
 # block forever
 sleep infinity
+
+# add event handler for quicker shutdown
+trap 'exit 0' SIGTERM
+
+# block forever
+read forever
