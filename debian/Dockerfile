@@ -9,7 +9,7 @@ RUN apt-get -y update && apt-get -y install \
     # docker specific
     cron \
     # base packages
-    htop nano wget unzip \
+    htop nano procps wget unzip \
     # mqtt, firebase, acme.sh, ddns
 #    curl dnsutils jq mosquitto-clients socat \
     && \
