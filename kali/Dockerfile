@@ -8,7 +8,7 @@ ARG TIMEZONE=America/New_York
 RUN apt-get -y update && \
 	apt-get -y full-upgrade && \
 	apt-get -y install \
-	kali-linux-top10 kali-linux-web man-db exploitdb
+	kali-linux-top10 kali-linux-web man-db exploitdb \
     && \
     cp "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" > /etc/timezone && \
 	apt-get autoremove && \
