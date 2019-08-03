@@ -6,11 +6,9 @@
 # initialize commands
 /usr/local/bin/init-cmds
 
-# block forever
-sleep infinity
-
 # add event handler for quicker shutdown
 trap 'exit 0' SIGTERM
 
 # block forever
-read forever
+touch /tmp/forever
+tail -f /tmp/forever
