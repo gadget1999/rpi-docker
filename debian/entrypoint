@@ -10,5 +10,5 @@
 trap 'exit 0' SIGTERM
 
 # block forever
-touch /tmp/forever
-tail -f /tmp/forever
+sleep infinity&
+wait $!
