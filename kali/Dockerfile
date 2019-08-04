@@ -14,4 +14,9 @@ RUN apt-get -y update && \
 	apt-get -y autoremove && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_*
 
+ADD ./init-cmds /usr/local/bin/init-cmds
+
+RUN chmod +x /usr/local/bin/init-cmds && \
+	/usr/local/bin/init-cmds
+
 CMD ["/bin/bash", "-c", "cd; /bin/bash -l"]

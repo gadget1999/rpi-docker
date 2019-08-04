@@ -18,7 +18,8 @@ RUN apt-get -y update && apt-get -y install \
 
 ADD ./entrypoint /entrypoint
 ADD ./init-cmds /usr/local/bin/init-cmds
-ADD ./.bash_profile /root/.bash_profile
-RUN chmod +x /entrypoint /usr/local/bin/init-cmds
+
+RUN chmod +x /entrypoint /usr/local/bin/init-cmds && \
+	/usr/local/bin/init-cmds
 
 CMD ["/entrypoint"]
