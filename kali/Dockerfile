@@ -14,7 +14,4 @@ RUN apt-get -y update && \
 	apt-get -y autoremove && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_*
 
-ADD ./.bashrc /root/.bashrc
-
-CMD ["/bin/bash", "-c", "cd"]
-
+CMD ["/bin/bash", "-c", "cd; /bin/bash -l"]
