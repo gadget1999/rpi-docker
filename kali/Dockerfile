@@ -11,7 +11,6 @@ RUN apt-get -y update && \
 	kali-linux-top10 kali-linux-web man-db exploitdb htop \
     && \
     cp "/usr/share/zoneinfo/${TIMEZONE}" /etc/localtime && echo "${TIMEZONE}" > /etc/timezone && \
-	apt-get -y autoremove && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /var/tmp/* /usr/share/man/?? /usr/share/man/??_*
 
 ADD ./init-cmds /usr/local/bin/init-cmds
