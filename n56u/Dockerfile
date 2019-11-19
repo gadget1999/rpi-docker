@@ -11,6 +11,7 @@ RUN apt-get clean all && \
                         pkg-config \
                         gettext \
                         automake \
+                        autopoint \
                         autogen \
                         texinfo \
                         autoconf \
@@ -23,6 +24,7 @@ RUN apt-get clean all && \
                         libmpc-dev \
                         kmod \
                         sudo \
+                        wget \
                         vim && \
     apt-get -y purge manpages \
                      xauth \
