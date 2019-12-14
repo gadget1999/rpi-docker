@@ -16,4 +16,4 @@ ENV DARKSKY_API_UNITS=us
 # en = english language
 ENV DARKSKY_API_LANG=en
 
-CMD python /server.py
+CMD python3 /server.py
