@@ -6,9 +6,11 @@
 
 <div id="main">
 
-  <div id="date">{{ now.time }}</div>
-
   <div id="current">
+    <div class="calendar">
+      <span class="weekday">{{ now.weekday }}</span>
+      <span class="day">{{ now.day }}</span>
+    </div>
     <img src="{{ ds.img_url }}/{{ now.icon }}.{{ ds.img_ext }}" alt="{{ now.icon }}" />
     <div id="temp">{{ now.temperature | int }}&deg;</div>
     <div id="highlow">{{ now.high | int }}&deg;&nbsp;H<br />{{ now.low | int }}&deg;&nbsp;L</div>
@@ -17,10 +19,7 @@
     <div id="text">{{ now.hour }}</div>
     <div id="detail">Feels like:&nbsp;{{ now.apparentTemperature | int }}&deg;&nbsp;
                      &nbsp;&nbsp;Wind:&nbsp;{{ now.windSpeed | int }}&nbsp;mph&nbsp;{{ now.windDir }}
-                     <br />
-                     Humidity:&nbsp;{{ now.humidity | int }}%&nbsp;&nbsp;
-                     UV&nbsp;Index:&nbsp;{{ now.uvIndex | int }}&nbsp;&nbsp;
-                     Pressure:&nbsp;{{ now.pressure | int }}&nbsp;mb</div>
+    </div>
   </div>
 
   <div class="forecast">
@@ -33,7 +32,11 @@
     {% endfor %}
   </div>
 
-  <div id="week">{{ now.forecast }}</div>
+  <div id="quote">
+    {% for line in now.dailyquote %}
+      {{ line }}<br />
+    {% endfor %}
+  </div>
 
   <div class="forecast">
     {% for item in daily %}
@@ -47,7 +50,7 @@
     {% endfor %}
   </div>
 
-  <div id="footer">{{ now.city }}<p />Last Updated: {{ now.timestamp }}</div>
+  <div id="footer">Last Updated: {{ now.timestamp }}</div>
 
 </div>
 </body>
