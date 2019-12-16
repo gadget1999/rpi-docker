@@ -59,29 +59,33 @@ def process_data():
   tz = data['timezone']
   unixtime = data['currently']['time']
   now = data['currently']
-  now['time'] = format_time(tz, '%A, %B %d %Y', unixtime)
+  now['time'] = format_time(tz, '%a, %b %d %Y', unixtime)
   now['timestamp'] = format_time(tz, '%Y-%m-%d %H:%M:%S', unixtime)
+  now['weekday'] = format_time(tz, '%a', unixtime)
+  now['day'] = format_time(tz, '%d', unixtime)
   # only available when all stations are reporing
   # now['hour'] = data['minutely']['summary']
-  now['day'] =  data['hourly']['summary']
+  now['summary'] =  data['hourly']['summary']
   now['high'] = data['daily']['data'][0]['temperatureHigh']
   now['low'] =  data['daily']['data'][0]['temperatureLow']
   now['forecast'] = data['daily']['summary']
   now['windDir'] = compass(int(data['currently']['windBearing']))
   now['city'] = location(os.environ['GPS_COORDINATES'])
+  with open('quote.txt', 'r') as quotefile:
+    now['dailyquote'] = [line for line in quotefile.readlines() if line.strip()]
 
   hourly = list()
-  for i in [2, 4, 6, 8, 10, 12]:
+  for i in [3, 6, 9, 12, 15, 18]:
     forecast = data['hourly']['data'][i]
     time = format_time(tz, '%-I %p', int(forecast['time']))
     hourly.append({"time": time, "icon": forecast['icon'],
                    "temp": forecast['temperature']})
 
   daily = list()
-  for i in range(6):
+  for i in range(1, 7):
     forecast = data['daily']['data'][i]
     date = format_time(tz, '%m/%d', int(forecast['time']))
-    day  = format_time(tz, '%A', int(forecast['time']))
+    day  = format_time(tz, '%a', int(forecast['time']))
     daily.append(
         {"day": day, "date": date, "icon": forecast['icon'],
          "high": forecast['temperatureHigh'],
