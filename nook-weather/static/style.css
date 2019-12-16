@@ -3,8 +3,10 @@
   width: 600px;
   height: 800px;
   display: block;
-/*  border-style: solid;
-  border-width: 1px; */
+/*
+  border-style: solid;
+  border-width: 1px; 
+*/
 }
 
 img {
@@ -13,43 +15,59 @@ img {
   display:block;
 }
 
-#date {
-  margin: auto;
+#current {
+  width:  500px;
+  height: 90px;
   display: block;
-  text-align: center;
-  width: 400px;
-  padding-top: 10px;
+  margin: auto;
+  padding-left: 20px;
 }
 
-#current {
-  width:  440px;
-  height: 150px;
+div.calendar {
   display: block;
   margin: auto;
- /* 
-border-style: solid;
-border-width: 1px;
-*/
+  width: 90px;
+  float: left;
+  border-style: solid;
+  border-width: 1px;
+}
 
+.weekday {
+  width:  90px;
+  height: 28px;
+  display: block;
+  color: white;
+  background-color: black;
+  font-size: 24px;
+  text-align: center;
+}
+.day {
+  width:  90px;
+  height: 62px;
+  display: inline-block;
+  font-size: 56px;
+  float: none;
+  text-align: center;
 }
 
 #current img {
-  height: 150px;
-  width: 150px;
+  height: 100px;
+  width: 100px;
   display: inline-block;
+  padding-left: 10px;
   float: left;
 }
 #current #temp {
   font-size: 70px;
   display: inline-block;
-  padding-top: 34px;
+  padding-top: 10px;
   float: left;
 }
 #current #highlow {
   font-size: 35px;
   display: inline-block;
   float: none;
-  padding-top: 37px;
+  padding-top: 10px;
   padding-left: 23px;
 }
 
@@ -57,7 +75,7 @@ border-width: 1px;
   width:  500px;
   display:  block;
   margin:  auto;
-  padding-bottom: 21px;
+  padding-bottom: 20px;
 }
 
 #conditions #text {
@@ -77,14 +95,12 @@ border-width: 1px;
   text-align: center;
 }
 
-
-
 div.forecast {
   display: block;
   margin: auto;
   width: 520px;
-  padding-bottom: 29px;
-padding-top: 21px;
+  padding-bottom: 2px;
+  padding-top: 2px;
 }
 
 .next img {
@@ -96,22 +112,25 @@ padding-top: 21px;
   display: inline-block;
   float: none;
   text-align: center;
+  font-weight: bold;
 }
 
-#week {
+#quote {
+  font-family: KaiTi;
   text-align:  center;
   width: 500;
   margin: auto;
-  font-size: 20px;
+  font-size: 32px;
+  font-weight: bold;
   display:  block;
-  padding-bottom: 20px;
-padding-top: 23px;
+  padding-top: 30px;
+  padding-bottom: 30px;
 }
 
 img.precip {
-height: 14px;
-width:  14px;
-display: inline-block;
+  height: 14px;
+  width:  14px;
+  display: inline-block;
 }
 
 #footer {
@@ -120,4 +139,5 @@ display: inline-block;
   width: 500px;
   text-align: center;
   top: 16px;
+  padding-top: 16px;
 }
