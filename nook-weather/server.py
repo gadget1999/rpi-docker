@@ -6,6 +6,7 @@ import json
 #from time import time.localtime, time.strftime, tzset, tzname
 import time
 import requests
+import random
 from geopy.geocoders import Nominatim
 from flask import Flask
 from flask import render_template
@@ -54,6 +55,22 @@ def format_time(tz, format, utime):
   time.tzset()
   return time.strftime(format, time.localtime(utime))
 
+def get_quote():
+  try:
+    quotes_folder="/quotes"
+    quote_filename=random.choice(os.listdir(quotes_folder))
+    quote_file=os.path.join(quotes_folder, quote_filename)
+    lines=[]
+    with open(quote_file, 'r') as quotefile:
+      for line in quotefile:
+        line=line.strip()
+        if (line):
+          lines.append(line)
+    return lines
+  except:
+    e = sys.exc_info()[0]
+    return str(e)
+
 def process_data():
   data = get_weather()
   tz = data['timezone']
@@ -71,8 +88,7 @@ def process_data():
   now['forecast'] = data['daily']['summary']
   now['windDir'] = compass(int(data['currently']['windBearing']))
   now['city'] = location(os.environ['GPS_COORDINATES'])
-  with open('quote.txt', 'r') as quotefile:
-    now['dailyquote'] = [line for line in quotefile.readlines() if line.strip()]
+  now['dailyquote'] = get_quote()
 
   hourly = list()
   for i in [3, 6, 9, 12, 15, 18]:
