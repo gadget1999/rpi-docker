@@ -46,10 +46,6 @@ def compass(bearing):
     if bearing >= v[0] and bearing < v[1]:
       return k
 
-def location(coords):
-  geolocator = Nominatim(user_agent="thecase/nook-weather")
-  return(geolocator.reverse(str(coords)).address)
-
 def format_time(tz, format, utime):
   os.environ['TZ'] = tz
   time.tzset()
@@ -61,6 +57,7 @@ def get_quote():
     quote_filename=random.choice(os.listdir(quotes_folder))
     quote_file=os.path.join(quotes_folder, quote_filename)
     lines=[]
+    #lines.append("DEBUG")
     with open(quote_file, 'r') as quotefile:
       for line in quotefile:
         line=line.strip()
@@ -87,7 +84,6 @@ def process_data():
   now['low'] =  data['daily']['data'][0]['temperatureLow']
   now['forecast'] = data['daily']['summary']
   now['windDir'] = compass(int(data['currently']['windBearing']))
-  now['city'] = location(os.environ['GPS_COORDINATES'])
   now['dailyquote'] = get_quote()
 
   hourly = list()
