@@ -61,6 +61,7 @@ RUN apk --no-cache --no-progress upgrade && \
     rm -rf /tmp/*
 
 COPY samba.sh /usr/bin/
+RUN chmod 600 /usr/bin/samba.sh
 
 EXPOSE 137/udp 138/udp 139 445
 
