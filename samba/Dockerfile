@@ -1,6 +1,6 @@
 FROM gadget1999/rpi-alpine
 
-# From https://github.com/dperson/samba
+# From https://github.com/dperson/samba -- Dockerfile.armhf
 
 # Install samba
 RUN apk --no-cache --no-progress upgrade && \
@@ -42,11 +42,11 @@ RUN apk --no-cache --no-progress upgrade && \
     echo '   recycle:versions = yes' >>$file && \
     echo '' >>$file && \
     echo '   # Security' >>$file && \
-    echo '   client ipc max protocol = SMB3' >>$file && \
+    echo '   client ipc max protocol = SMB3_11' >>$file && \
     echo '   client ipc min protocol = SMB2_10' >>$file && \
-    echo '   client max protocol = SMB3' >>$file && \
+    echo '   client max protocol = SMB3_11' >>$file && \
     echo '   client min protocol = SMB2_10' >>$file && \
-    echo '   server max protocol = SMB3' >>$file && \
+    echo '   server max protocol = SMB3_11' >>$file && \
     echo '   server min protocol = SMB2_10' >>$file && \
     echo '' >>$file && \
     echo '   # Time Machine' >>$file && \
@@ -61,7 +61,6 @@ RUN apk --no-cache --no-progress upgrade && \
     rm -rf /tmp/*
 
 COPY samba.sh /usr/bin/
-RUN chmod 600 /usr/bin/samba.sh
 
 EXPOSE 137/udp 138/udp 139 445
 
