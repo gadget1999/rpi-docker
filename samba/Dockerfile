@@ -7,7 +7,7 @@ ARG TIMEZONE=America/New_York
 
 # Install samba
 RUN apk --no-cache --no-progress upgrade && \
-    apk --no-cache --no-progress add bash samba-common-tools samba && \
+    apk --no-cache --no-progress add bash samba && \
     rm -rf /var/cache/apk/* && \
     rm -rf /tmp/*
     
