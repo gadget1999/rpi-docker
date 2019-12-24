@@ -40,14 +40,14 @@ disable spoolss = yes
 guest account = nobody
 max log size = 50
 map to guest = bad user
-socket options = TCP_NODELAY SO_RCVBUF=8192 SO_SNDBUF=8192
+#socket options = TCP_NODELAY SO_RCVBUF=8192 SO_SNDBUF=8192
 local master = no
 dns proxy = no
 EOT
     
   IFS=: read username password <<<"$USER"
   echo -n "'$username' "
-  adduser "$username" -SHD
+  adduser "$username" -u 1001 -SHD
   echo -n "with password '$password' "
   echo "$password" |tee - |smbpasswd -s -a "$username"
   echo "DONE"
@@ -55,7 +55,6 @@ EOT
   IFS=: read sharename sharepath readwrite users <<<"$SHARE"
   echo -n "'$sharename' "
   echo "[$sharename]" >>"$CONFIG_FILE"
-  chown smbuser "$sharepath"
   echo -n "path '$sharepath' "
   echo "path = \"$sharepath\"" >>"$CONFIG_FILE"
   echo -n "read"
@@ -84,4 +83,5 @@ EOT
   echo "DONE"
 fi
 
-exec smbd -FS --configfile="$CONFIG_FILE" < /dev/null
+nmbd -D
+smbd -FS --configfile="$CONFIG_FILE" < /dev/null
