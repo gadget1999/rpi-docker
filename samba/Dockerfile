@@ -1,4 +1,5 @@
 FROM gadget1999/rpi-alpine
+COPY qemu-arm-static /usr/bin/
 
 # From https://github.com/dperson/samba -- Dockerfile.armhf
 
