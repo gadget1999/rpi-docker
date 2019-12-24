@@ -26,6 +26,7 @@ if [ $initialized = "0" ]; then
 workgroup = WORKGROUP
 netbios name = $hostname
 server string = $hostname
+server min protocol = SMB2_10
 security = user
 create mask = 0777
 directory mask = 0777
