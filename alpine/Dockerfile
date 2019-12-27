@@ -1,4 +1,5 @@
 FROM arm32v7/alpine:latest
+COPY qemu-arm-static /usr/bin
 
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Base Alpine image for Raspberry Pi"
