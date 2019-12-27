@@ -7,7 +7,6 @@ import json
 import time
 import requests
 import random
-from geopy.geocoders import Nominatim
 from flask import Flask
 from flask import render_template
 from pprint import pprint
