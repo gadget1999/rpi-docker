@@ -89,6 +89,7 @@ div.calendar {
 
 #conditions #detail {
   font-size: 15px;
+  font-weight: bold;
   width:  500px;
   display: inline-block;
   margin: auto;
