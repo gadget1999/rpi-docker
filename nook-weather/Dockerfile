@@ -3,7 +3,7 @@ FROM gadget1999/rpi-python3:latest
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Weather station for Nook Simple Touch"
 
-RUN pip3 install requests flask
+RUN pip3 install requests flask waitress
 
 COPY server.py /
 COPY static /static
