@@ -56,12 +56,13 @@ def get_quote():
     quote_filename=random.choice(os.listdir(quotes_folder))
     quote_file=os.path.join(quotes_folder, quote_filename)
     lines=[]
-    #lines.append("DEBUG")
     with open(quote_file, 'r') as quotefile:
-      for line in quotefile:
+      line = quotefile.readline()
+      while line:
         line=line.strip()
         if (line):
           lines.append(line)
+        line = quotefile.readline()
     return lines
   except:
     e = sys.exc_info()[0]
