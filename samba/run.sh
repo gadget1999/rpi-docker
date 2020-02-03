@@ -17,6 +17,10 @@ CONFIG_FILE="/etc/samba/smb.conf"
 initialized=`getent passwd |grep -c '^smbuser:'`
 
 hostname=`hostname`
+
+IFS=: read username password <<<"$USER"
+echo "User: $username"
+
 set -e
 if [ $initialized = "0" ]; then
   adduser smbuser -SHD
@@ -25,6 +29,7 @@ if [ $initialized = "0" ]; then
 
   cat >"$CONFIG_FILE" <<EOT
 [global]
+smb ports = 10445 10139
 workgroup = WORKGROUP
 netbios name = $hostname
 server string = $hostname
@@ -88,5 +93,12 @@ EOT
   echo "DONE"
 fi
 
-su-exec /usr/sbin/nmbd:$PUID -D
-su-exec /usr/sbin/smbd:$PUID -FS --configfile="$CONFIG_FILE" < /dev/null
+folders=(/var/log/samba /var/lib/samba /var/cache/samba /run/samba)
+for folder in ${folders[*]}; do
+ [ ! -d $folder ] && mkdir $folder
+ chown -R $username $folder
+ chgrp -R $username $folder
+done
+
+#su-exec $username /usr/sbin/nmbd -D
+su-exec $username /usr/sbin/smbd -FS --configfile="$CONFIG_FILE" < /dev/null
