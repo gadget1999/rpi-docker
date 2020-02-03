@@ -16,5 +16,4 @@ RUN chmod u+x /run.sh
 
 EXPOSE 10445 10137 10138 10139
 
-ENTRYPOINT ["/run.sh"]
-CMD ["-h"]
+CMD ["/run.sh"]

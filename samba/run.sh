@@ -88,5 +88,5 @@ EOT
   echo "DONE"
 fi
 
-su-exec nmbd:$PUID -D
-su-exec smbd:$PUID -FS --configfile="$CONFIG_FILE" < /dev/null
+su-exec /usr/sbin/nmbd:$PUID -D
+su-exec /usr/sbin/smbd:$PUID -FS --configfile="$CONFIG_FILE" < /dev/null
