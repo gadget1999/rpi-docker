@@ -14,7 +14,7 @@ RUN apk --no-cache --no-progress upgrade && \
 COPY run.sh /run.sh
 RUN chmod u+x /run.sh
 
-EXPOSE 445 137 138 139
+EXPOSE 10445 10137 10138 10139
 
 ENTRYPOINT ["/run.sh"]
 CMD ["-h"]

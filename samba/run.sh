@@ -21,12 +21,14 @@ set -e
 if [ $initialized = "0" ]; then
   adduser smbuser -SHD
 
+  [ "$SMB_VER" == "" ] && SMB_VER="SMB2_10"
+
   cat >"$CONFIG_FILE" <<EOT
 [global]
 workgroup = WORKGROUP
 netbios name = $hostname
 server string = $hostname
-server min protocol = SMB2_10
+server min protocol = $SMB_VER
 security = user
 create mask = 0777
 directory mask = 0777
@@ -39,6 +41,7 @@ printing = bsd
 printcap name = /dev/null
 disable spoolss = yes
 guest account = nobody
+log file = /tmp/samba.log
 max log size = 50
 map to guest = bad user
 #socket options = TCP_NODELAY SO_RCVBUF=8192 SO_SNDBUF=8192
@@ -48,7 +51,8 @@ EOT
     
   IFS=: read username password <<<"$USER"
   echo -n "'$username' "
-  adduser "$username" -u 1001 -SHD
+  addgroup -g $PGID $username
+  adduser "$username" -u $PUID -G $username -SHD
   echo -n "with password '$password' "
   echo "$password" |tee - |smbpasswd -s -a "$username"
   echo "DONE"
