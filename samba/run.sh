@@ -58,7 +58,6 @@ EOT
   echo -n "'$username' "
   addgroup -g $PGID $username
   adduser "$username" -u $PUID -G $username -SHD
-  echo -n "with password '$password' "
   echo "$password" |tee - |smbpasswd -s -a "$username"
   echo "DONE"
 
