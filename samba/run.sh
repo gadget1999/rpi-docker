@@ -14,6 +14,41 @@ check_env "USER SHARE"
 
 CONFIG_FILE="/etc/samba/smb.conf"
 
+function add_samba_share() {
+  local share_info=$1
+
+  [ "$share_info" == "" ] && return
+
+  IFS=: read sharename sharepath readwrite users <<<"$share_info"
+  echo -n "'$sharename' "
+  echo "[$sharename]" >>"$CONFIG_FILE"
+  echo -n "path '$sharepath' "
+  echo "path = \"$sharepath\"" >>"$CONFIG_FILE"
+  echo -n "read"
+  if [[ "rw" = "$readwrite" ]] ; then
+    echo -n "+write "
+    echo "read only = no" >>"$CONFIG_FILE"
+    echo "writable = yes" >>"$CONFIG_FILE"
+  else
+    echo -n "-only "
+    echo "read only = yes" >>"$CONFIG_FILE"
+    echo "writable = no" >>"$CONFIG_FILE"
+  fi
+  if [[ -z "$users" ]] ; then
+    echo -n "for guests: "
+    echo "browseable = yes" >>"$CONFIG_FILE"
+    echo "guest ok = yes" >>"$CONFIG_FILE"
+    echo "public = yes" >>"$CONFIG_FILE"
+  else
+    echo -n "for users: "
+    users=$(echo "$users" |tr "," " ")
+    echo -n "$users "
+    echo "valid users = $users" >>"$CONFIG_FILE"
+    echo "write list = $users" >>"$CONFIG_FILE"
+    echo "admin users = $users" >>"$CONFIG_FILE"
+  fi
+}
+
 initialized=`getent passwd |grep -c '^smbuser:'`
 
 hostname=`hostname`
@@ -53,7 +88,8 @@ map to guest = bad user
 local master = no
 dns proxy = no
 EOT
-    
+}
+
   IFS=: read username password <<<"$USER"
   echo -n "'$username' "
   addgroup -g $PGID $username
@@ -61,34 +97,10 @@ EOT
   echo "$password" |tee - |smbpasswd -s -a "$username"
   echo "DONE"
 
-  IFS=: read sharename sharepath readwrite users <<<"$SHARE"
-  echo -n "'$sharename' "
-  echo "[$sharename]" >>"$CONFIG_FILE"
-  echo -n "path '$sharepath' "
-  echo "path = \"$sharepath\"" >>"$CONFIG_FILE"
-  echo -n "read"
-  if [[ "rw" = "$readwrite" ]] ; then
-    echo -n "+write "
-    echo "read only = no" >>"$CONFIG_FILE"
-    echo "writable = yes" >>"$CONFIG_FILE"
-  else
-    echo -n "-only "
-    echo "read only = yes" >>"$CONFIG_FILE"
-    echo "writable = no" >>"$CONFIG_FILE"
-  fi
-  if [[ -z "$users" ]] ; then
-    echo -n "for guests: "
-    echo "browseable = yes" >>"$CONFIG_FILE"
-    echo "guest ok = yes" >>"$CONFIG_FILE"
-    echo "public = yes" >>"$CONFIG_FILE"
-  else
-    echo -n "for users: "
-    users=$(echo "$users" |tr "," " ")
-    echo -n "$users "
-    echo "valid users = $users" >>"$CONFIG_FILE"
-    echo "write list = $users" >>"$CONFIG_FILE"
-    echo "admin users = $users" >>"$CONFIG_FILE"
-  fi
+  add_samba_share "$SHARE"
+  add_samba_share "$SHARE2"
+  add_samba_share "$SHARE3"
+  add_samba_share "$SHARE4"
   echo "DONE"
 fi
 
