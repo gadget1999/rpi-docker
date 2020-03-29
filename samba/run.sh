@@ -47,6 +47,7 @@ function add_samba_share() {
     echo "write list = $users" >>"$CONFIG_FILE"
     echo "admin users = $users" >>"$CONFIG_FILE"
   fi
+  echo "DONE"
 }
 
 initialized=`getent passwd |grep -c '^smbuser:'`
@@ -88,7 +89,6 @@ map to guest = bad user
 local master = no
 dns proxy = no
 EOT
-}
 
   IFS=: read username password <<<"$USER"
   echo -n "'$username' "
@@ -101,7 +101,6 @@ EOT
   add_samba_share "$SHARE2"
   add_samba_share "$SHARE3"
   add_samba_share "$SHARE4"
-  echo "DONE"
 fi
 
 folders=(/var/log/samba /var/lib/samba /var/cache/samba /run/samba)
