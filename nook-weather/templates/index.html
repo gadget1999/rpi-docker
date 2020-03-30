@@ -26,7 +26,7 @@
     {% for item in hourly %}
     <span class="next">
       {{ item.time }}
-      <img src="{{ ds.img_url }}/{{ item.icon }}.{{ ds.img_ext }}" alt="{{ now.icon }}" />
+      <img src="{{ ds.img_url }}/{{ item.icon }}.{{ ds.img_ext }}" alt="{{ item.icon }}" />
       {{ item.temp | int }}&deg;
     </span>
     {% endfor %}
@@ -44,7 +44,7 @@
       {{ item.day }}
       <br />
       {{ item.date }}
-      <img src=" {{ ds.img_url }}/{{ item.icon }}.{{ ds.img_ext }}" alt="{{ now.icon }}" />
+      <img src=" {{ ds.img_url }}/{{ item.icon }}.{{ ds.img_ext }}" alt="{{ item.icon }}" />
       {{ item.high | int }}&deg;<br />{{ item.low | int }}&deg;
     </span>
     {% endfor %}
