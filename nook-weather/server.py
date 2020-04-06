@@ -118,5 +118,6 @@ if __name__ == '__main__':
   if 'DARKSKY_API_KEY' not in os.environ:
     print("ERROR Please set the environment variable DARKSK_API_KEY")
     sys.exit(1)
+  app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
   from waitress import serve
   serve(app, host="0.0.0.0", port=int(os.environ['BIND_PORT']), threads=20)
