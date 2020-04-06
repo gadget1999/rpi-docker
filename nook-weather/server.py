@@ -120,4 +120,4 @@ if __name__ == '__main__':
     sys.exit(1)
   app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
   from waitress import serve
-  serve(app, host="0.0.0.0", port=int(os.environ['BIND_PORT']), threads=20)
+  serve(app, host="0.0.0.0", port=int(os.environ['BIND_PORT']), threads=5)
