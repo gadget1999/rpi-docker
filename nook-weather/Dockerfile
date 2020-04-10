@@ -11,9 +11,5 @@ COPY templates /templates
 
 ENV GPS_COORDINATES=40.6976684,-74.2605725
 ENV BIND_PORT=8080
-# us = imperial units
-ENV DARKSKY_API_UNITS=us
-# en = english language
-ENV DARKSKY_API_LANG=en
 
 CMD python3 /server.py

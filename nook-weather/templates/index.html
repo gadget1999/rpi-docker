@@ -8,17 +8,16 @@
 
   <div id="current">
     <div class="calendar">
-      <span class="weekday">{{ now.weekday }}</span>
-      <span class="day">{{ now.day }}</span>
+      <span class="weekday">{{ info.day }}</span>
+      <span class="day">{{ info.date }}</span>
     </div>
-    <img src="{{ ds.img_url }}/{{ now.icon }}.{{ ds.img_ext }}" alt="{{ now.icon }}" />
-    <div id="temp">{{ now.temperature | int }}&deg;</div>
-    <div id="highlow">{{ now.high | int }}&deg;&nbsp;H<br />{{ now.low | int }}&deg;&nbsp;L</div>
+    <img src="{{ now.icon }}" alt="{{ now.cond }}" />
+    <div id="temp">{{ now.temp }}&deg;</div>
+    <div id="highlow">{{ now.high }}&deg;&nbsp;H<br />{{ now.low }}&deg;&nbsp;L</div>
   </div>
   <div id="conditions">
-    <div id="text">{{ now.hour }}</div>
-    <div id="detail">Feels like:&nbsp;{{ now.apparentTemperature | int }}&deg;&nbsp;
-                     &nbsp;&nbsp;Wind:&nbsp;{{ now.windSpeed | int }}&nbsp;mph&nbsp;{{ now.windDir }}
+    <div id="detail">Feels like:&nbsp;{{ now.feel }}&deg;&nbsp;
+                     &nbsp;&nbsp;Wind:&nbsp;{{ now.windSpeed }}&nbsp;mph&nbsp;{{ now.windDir }}
     </div>
   </div>
 
@@ -26,14 +25,14 @@
     {% for item in hourly %}
     <span class="next">
       {{ item.time }}
-      <img src="{{ ds.img_url }}/{{ item.icon }}.{{ ds.img_ext }}" alt="{{ item.icon }}" />
-      {{ item.temp | int }}&deg;
+      <img src="{{ item.icon }}" alt="{{ item.cond }}" />
+      {{ item.temp }}&deg;
     </span>
     {% endfor %}
   </div>
 
   <div id="quote">
-    {% for line in now.dailyquote %}
+    {% for line in info.quote %}
       {{ line }}<br />
     {% endfor %}
   </div>
@@ -44,13 +43,13 @@
       {{ item.day }}
       <br />
       {{ item.date }}
-      <img src=" {{ ds.img_url }}/{{ item.icon }}.{{ ds.img_ext }}" alt="{{ item.icon }}" />
-      {{ item.high | int }}&deg;<br />{{ item.low | int }}&deg;
+      <img src="{{ item.icon }}" alt="{{ item.cond }}" />
+      {{ item.high }}&deg;<br />{{ item.low }}&deg;
     </span>
     {% endfor %}
   </div>
 
-  <div id="footer">Last Updated: {{ now.timestamp }}</div>
+  <div id="footer">Last Updated: {{ now.time }}</div>
 
 </div>
 </body>
