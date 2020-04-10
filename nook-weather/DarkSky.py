@@ -60,7 +60,7 @@ class DarkSkyAPI:
       forecast = data['hourly']['data'][i]
       unixtime = time.localtime(forecast['time'])
       item = {}
-      item['time'] = time.strftime('%I %p', unixtime)
+      item['time'] = time.strftime('%-I %p', unixtime)
       item['temp'] = int(forecast['temperature'])
       item['cond'] = forecast['icon']
       item['icon'] = get_icon_path(item['cond'])

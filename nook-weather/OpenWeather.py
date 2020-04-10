@@ -77,7 +77,7 @@ class OpenWeatherAPI:
       forecast = data['hourly'][i]
       unixtime = time.localtime(forecast['dt'])
       item = {}
-      item['time'] = time.strftime('%I %p', unixtime)
+      item['time'] = time.strftime('%-I %p', unixtime)
       item['temp'] = int(forecast['temp'])
       item['cond'] = forecast['weather'][0]['main']
       item['icon'] = get_icon_path(item['cond'])
