@@ -1,10 +1,8 @@
 #!/usr/bin/env python
 
 import os
-import sys
 import time
 import random
-from pprint import pprint
 
 from DarkSky import DarkSkyAPI
 from OpenWeather import OpenWeatherAPI
@@ -16,7 +14,7 @@ def get_quote():
   try:
     debug = os.environ.get('DEBUG', None)
     if debug:
-      return "DEBUG"
+      return ["DEBUG"]
 
     quotes_folder="/quotes"
     quote_filename=random.choice(os.listdir(quotes_folder))
@@ -30,9 +28,8 @@ def get_quote():
           lines.append(line)
         line = quotefile.readline()
     return lines
-  except:
-    e = sys.exc_info()[0]
-    return str(e)
+  except Exception as e:
+    return [f"Failed to get quote: {e}"]
 
 def get_forecast():
   api_provider = os.environ['WEATHER_API_PROVIDER']
@@ -44,6 +41,8 @@ def get_forecast():
     api = OpenWeatherAPI(key)
   elif api_provider.lower() == "darksky":
     api = DarkSkyAPI(key)
+  else:
+    raise Exception(f"Unknown weather API provider: {api_provider}")
 
   return api.forecast(lat, lon)
 
@@ -60,24 +59,17 @@ def process_data():
   data['info'] = info
   return(data)
 
-def check_os_env(variables):
-  for variable in variables:
-    if variable not in os.environ:
-      print(f"ERROR Please set the environment variables: {variable}")
-      sys.exit(1)
-
 app = Flask(__name__, static_folder='static', template_folder='templates')
 @app.route('/')
 def index():
-  """ index page function. """
-  data = process_data()
-  return render_template('index.html', now=data['now'], hourly=data['hourly']
+  try:
+    data = process_data()
+    return render_template('index.html', now=data['now'], hourly=data['hourly']
                                      , daily=data['daily'], info=data['info'])
+  except Exception as e:
+    return f"System error: {e}"
 
 if __name__ == '__main__':
-  variables = ['WEATHER_API_PROVIDER', 'WEATHER_API_KEY', 'GPS_COORDINATES']
-  check_os_env(variables)
-
   app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
   from waitress import serve
   serve(app)
