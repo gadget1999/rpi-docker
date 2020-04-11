@@ -57,6 +57,7 @@ def process_data():
   info['day'] = time.strftime('%a', timestamp)
   info['date'] = time.strftime('%d', timestamp)
   info['quote'] = get_quote()
+  info['api_provider'] = os.environ['WEATHER_API_PROVIDER']
 
   data['info'] = info
   return(data)
