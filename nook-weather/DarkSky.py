@@ -84,7 +84,7 @@ class DarkSkyAPI:
     return result
 
   def __api_call(self, lat, lon):
-    debug_json = os.environ.get('DEBUG_JSON', None)
+    debug_json = os.environ.get('DEBUG', None)
     if debug_json and os.path.exists(debug_json):
       with open(debug_json) as r:
         return json.load(r)

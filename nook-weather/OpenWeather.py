@@ -24,25 +24,30 @@ def compass(bearing):
 
 ICON_PATH = "/static/images"
 ICON_EXT = "png"
-COND_MAPPING = {
-    "thunderstorm" : "thunderstorm",
-    "drizzle" : "rain",
-    "sleet" : "sleet",
-    "rain" : "rain",
-    "snow" : "snow",
-    "mist" : "fog",
-    "fog" : "fog",
-    "clear" : "clear-day",
-    "clouds" : "cloudy"
-    }
-def get_icon_path(cond):
-  cond = cond.lower()
-  if cond in COND_MAPPING:
-    icon = COND_MAPPING[cond]
-    return f"{ICON_PATH}/{icon}.{ICON_EXT}"
-
-  # return non-existing icon to show ALT text
-  return f"{ICON_PATH}/unknown.{ICON_EXT}"
+ICON_MAPPING = {
+  "01d": "clear-day",
+  "01n": "clear-night",
+  "02d": "partly-cloudy-day",
+  "02n": "partly-cloudy-night",
+  "03d": "cloudy",
+  "03n": "cloudy",
+  "04d": "cloudy",
+  "04n": "cloudy",
+  "09d": "rain",
+  "09n": "rain",
+  "10d": "rain",
+  "10n": "rain",
+  "11d": "thunderstorm",
+  "11n": "thunderstorm",
+  "13d": "snow",
+  "13n": "snow",
+  "50d": "fog",
+  "50n": "fog"
+  }
+# detailed condition list: https://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
+def get_icon_path(icon):
+  standard_icon = ICON_MAPPING.get(icon, 'unknown')
+  return f"{ICON_PATH}/{standard_icon}.{ICON_EXT}"
 
 OPEN_WEATHER_API_ENDPOINT = "https://api.openweathermap.org/data/2.5/onecall"
 class OpenWeatherAPI:
@@ -67,7 +72,7 @@ class OpenWeatherAPI:
     now['high'] = int(data['daily'][0]['temp']['max'])
     now['low'] =  int(data['daily'][0]['temp']['min'])
     now['cond'] = data['current']['weather'][0]['main']
-    now['icon'] = get_icon_path(now['cond'])
+    now['icon'] = get_icon_path(data['current']['weather'][0]['icon'])
     now['windSpeed'] = int(data['current']['wind_speed'])
     now['windDir'] = compass(int(data['current']['wind_deg']))
     result['now'] = now
@@ -80,7 +85,7 @@ class OpenWeatherAPI:
       item['time'] = time.strftime('%-I %p', unixtime)
       item['temp'] = int(forecast['temp'])
       item['cond'] = forecast['weather'][0]['main']
-      item['icon'] = get_icon_path(item['cond'])
+      item['icon'] = get_icon_path(forecast['weather'][0]['icon'])
       hourly.append(item)
     result['hourly'] = hourly
 
@@ -94,14 +99,14 @@ class OpenWeatherAPI:
       item['high'] = int(forecast['temp']['max'])
       item['low'] =  int(forecast['temp']['min'])
       item['cond'] = forecast['weather'][0]['main']
-      item['icon'] = get_icon_path(item['cond'])
+      item['icon'] = get_icon_path(forecast['weather'][0]['icon'])
       daily.append(item)
     result['daily'] = daily
 
     return result
 
   def __api_call(self, lat, lon):
-    debug_json = os.environ.get('DEBUG_JSON', None)
+    debug_json = os.environ.get('DEBUG', None)
     if debug_json and os.path.exists(debug_json):
       with open(debug_json) as r:
         return json.load(r)

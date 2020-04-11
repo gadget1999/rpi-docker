@@ -16,6 +16,10 @@ from flask import render_template
 
 def get_quote():
   try:
+    debug = os.environ.get('DEBUG', None)
+    if debug:
+      return "DEBUG"
+
     quotes_folder="/quotes"
     quote_filename=random.choice(os.listdir(quotes_folder))
     quote_file=os.path.join(quotes_folder, quote_filename)
