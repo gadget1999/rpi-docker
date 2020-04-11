@@ -2,8 +2,6 @@
 
 import os
 import sys
-import json
-#from time import time.localtime, time.strftime, tzset, tzname
 import time
 import random
 from pprint import pprint

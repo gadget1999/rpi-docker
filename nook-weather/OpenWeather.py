@@ -1,26 +1,9 @@
-#!/usr/bin/env python
-
 import os
-import sys
 import json
 import time
 import requests
 
-def compass(bearing):
-  coords = {
-    'N':  [0, 22.5],
-    'NE': [22.5, 67.5],
-    'E':  [67.5, 112.5],
-    'SE': [112.5, 157.5],
-    'S':  [157.5, 202.5],
-    'SW': [202.5, 247.5],
-    'W':  [247.5, 292.5],
-    'NW': [292.5, 337.5],
-    'N':  [337.5, 360]
-  }
-  for k,v in coords.items():
-    if bearing >= v[0] and bearing < v[1]:
-      return k
+import utils
 
 ICON_PATH = "/static/images"
 ICON_EXT = "png"
@@ -65,8 +48,8 @@ class OpenWeatherAPI:
     result = {}
 
     now = {}
-    unixtime = time.localtime(data['current']['dt'])
-    now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', unixtime)
+    localtime = time.localtime(data['current']['dt'])
+    now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
     now['temp'] =  int(data['current']['temp'])
     now['feel'] =  int(data['current']['feels_like'])
     now['high'] = int(data['daily'][0]['temp']['max'])
@@ -74,15 +57,15 @@ class OpenWeatherAPI:
     now['cond'] = data['current']['weather'][0]['main']
     now['icon'] = get_icon_path(data['current']['weather'][0]['icon'])
     now['windSpeed'] = int(data['current']['wind_speed'])
-    now['windDir'] = compass(int(data['current']['wind_deg']))
+    now['windDir'] = utils.get_direction(int(data['current']['wind_deg']))
     result['now'] = now
 
     hourly = list()
     for i in [3, 6, 9, 12, 15, 18]:
       forecast = data['hourly'][i]
-      unixtime = time.localtime(forecast['dt'])
+      localtime = time.localtime(forecast['dt'])
       item = {}
-      item['time'] = time.strftime('%-I %p', unixtime)
+      item['time'] = utils.get_hour_str(localtime)
       item['temp'] = int(forecast['temp'])
       item['cond'] = forecast['weather'][0]['main']
       item['icon'] = get_icon_path(forecast['weather'][0]['icon'])
@@ -92,10 +75,10 @@ class OpenWeatherAPI:
     daily = list()
     for i in range(1, 7):
       forecast = data['daily'][i]
-      unixtime = time.localtime(forecast['dt'])
+      localtime = time.localtime(forecast['dt'])
       item = {}
-      item['day'] = time.strftime('%a', unixtime)
-      item['date'] = time.strftime('%m/%d', unixtime)
+      item['day'] = time.strftime('%a', localtime)
+      item['date'] = time.strftime('%m/%d', localtime)
       item['high'] = int(forecast['temp']['max'])
       item['low'] =  int(forecast['temp']['min'])
       item['cond'] = forecast['weather'][0]['main']
