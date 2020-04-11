@@ -20,8 +20,8 @@ class DarkSkyAPI:
   # map api return to standard format
   # data schema:
   # - now: time, temp, high, low, feel, cond, icon, windSpeed, windDir
-  # - hourly (every 3 hours, up to 6 items): time, temp, cond, icon
-  # - daily (up to 5 days): day, date, high, low, cond, icon
+  # - hourly (every 1-3 hours, up to 6 items): time, temp, cond, icon
+  # - daily (up to 6 days): day, date, high, low, cond, icon
   def __map_api_data(self, data):
     result = {}
 
@@ -39,7 +39,7 @@ class DarkSkyAPI:
     result['now'] = now
 
     hourly = list()
-    for i in [3, 6, 9, 12, 15, 18]:
+    for i in [1, 3, 5, 8, 11, 14]:
       forecast = data['hourly']['data'][i]
       localtime = time.localtime(forecast['time'])
       item = {}
