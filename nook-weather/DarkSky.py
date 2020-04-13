@@ -10,16 +10,15 @@ ICON_EXT = "png"
 def get_icon_path(cond):
   return f"{ICON_PATH}/{cond}.{ICON_EXT}"
 
-DARKSKY_API_ENDPOINT = "https://api.darksky.net/forecast"
 class DarkSkyAPI:
-  _api_key = None
+  api_endpoint = "https://api.darksky.net/forecast"
 
   def __init__(self, app_key):
-    self._api_key = app_key
+    self.__api_key = app_key
 
   # map api return to standard format
   # data schema:
-  # - now: time, temp, high, low, feel, cond, icon, windSpeed, windDir
+  # - now: time, temp, high, low, cond, icon, summary with feels, windSpeed, windDir
   # - hourly (every 1-3 hours, up to 6 items): time, temp, cond, icon
   # - daily (up to 6 days): day, date, high, low, cond, icon
   def __map_api_data(self, data):
@@ -28,14 +27,15 @@ class DarkSkyAPI:
     now = {}
     localtime = time.localtime(data['currently']['time'])
     now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
-    now['temp'] =  int(data['currently']['temperature'])
-    now['feel'] =  int(data['currently']['apparentTemperature'])
+    now['temp'] = int(data['currently']['temperature'])
     now['high'] = int(data['daily']['data'][0]['temperatureHigh'])
-    now['low'] =  int(data['daily']['data'][0]['temperatureLow'])
+    now['low'] = int(data['daily']['data'][0]['temperatureLow'])
     now['cond'] = data['currently']['icon']
     now['icon'] = get_icon_path(now['cond'])
-    now['windSpeed'] = int(data['currently']['windSpeed'])
-    now['windDir'] = utils.get_direction(int(data['currently']['windBearing']))
+    feels = int(data['currently']['apparentTemperature'])
+    windSpeed = int(data['currently']['windSpeed'])
+    windDir = utils.get_direction(int(data['currently']['windBearing']))
+    now['summary'] = f"{windSpeed} mph {windDir} wind, feels like {feels}°" 
     result['now'] = now
 
     hourly = list()
@@ -72,7 +72,7 @@ class DarkSkyAPI:
       with open(debug_json) as r:
         return json.load(r)
 
-    API_URL = f"{DARKSKY_API_ENDPOINT}/{self._api_key}/{lat},{lon}?units=us&lang=en"
+    API_URL = f"{DarkSkyAPI.api_endpoint}/{self.__api_key}/{lat},{lon}?units=us&lang=en"
     r = requests.get(API_URL)
 
     if debug_json:

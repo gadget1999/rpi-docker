@@ -6,6 +6,7 @@ import random
 
 from DarkSky import DarkSkyAPI
 from OpenWeather import OpenWeatherAPI
+from NWS import NWSAPI
 
 from flask import Flask
 from flask import render_template
@@ -39,6 +40,8 @@ def get_forecast():
   lon = gps[1]
   if api_provider.lower() == "openweather":
     api = OpenWeatherAPI(key)
+  elif api_provider.lower() == "nws":
+    api = NWSAPI(key)
   elif api_provider.lower() == "darksky":
     api = DarkSkyAPI(key)
   else:

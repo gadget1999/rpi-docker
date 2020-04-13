@@ -16,9 +16,7 @@
     <div id="highlow">{{ now.high }}&deg;&nbsp;H<br />{{ now.low }}&deg;&nbsp;L</div>
   </div>
   <div id="conditions">
-    <div id="detail">Feels like:&nbsp;{{ now.feel }}&deg;&nbsp;
-                     &nbsp;&nbsp;Wind:&nbsp;{{ now.windSpeed }}&nbsp;mph&nbsp;{{ now.windDir }}
-    </div>
+    <div id="detail">{{ now.summary }}</div>
   </div>
 
   <div class="forecast">

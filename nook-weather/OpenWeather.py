@@ -7,6 +7,8 @@ import utils
 
 ICON_PATH = "/static/images"
 ICON_EXT = "png"
+
+# detailed condition list: https://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
 ICON_MAPPING = {
   "01d": "clear-day",
   "01n": "clear-night",
@@ -27,21 +29,20 @@ ICON_MAPPING = {
   "50d": "fog",
   "50n": "fog"
   }
-# detailed condition list: https://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
+
 def get_icon_path(icon):
   standard_icon = ICON_MAPPING.get(icon, 'unknown')
   return f"{ICON_PATH}/{standard_icon}.{ICON_EXT}"
 
-OPEN_WEATHER_API_ENDPOINT = "https://api.openweathermap.org/data/2.5/onecall"
 class OpenWeatherAPI:
-  _api_key = None
+  api_endpoint = "https://api.openweathermap.org/data/2.5/onecall"
 
   def __init__(self, app_key):
-    self._api_key = app_key
+    self.__api_key = app_key
 
   # map api return to standard format
   # data schema:
-  # - now: time, temp, high, low, feel, cond, icon, windSpeed, windDir
+  # - now: time, temp, high, low, cond, icon, summary with feels, windSpeed, windDir
   # - hourly (every 1-3 hours, up to 6 items): time, temp, cond, icon
   # - daily (up to 6 days): day, date, high, low, cond, icon
   def __map_api_data(self, data):
@@ -50,14 +51,15 @@ class OpenWeatherAPI:
     now = {}
     localtime = time.localtime(data['current']['dt'])
     now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
-    now['temp'] =  int(data['current']['temp'])
-    now['feel'] =  int(data['current']['feels_like'])
+    now['temp'] = int(data['current']['temp'])
     now['high'] = int(data['daily'][0]['temp']['max'])
-    now['low'] =  int(data['daily'][0]['temp']['min'])
+    now['low'] = int(data['daily'][0]['temp']['min'])
     now['cond'] = data['current']['weather'][0]['main']
     now['icon'] = get_icon_path(data['current']['weather'][0]['icon'])
-    now['windSpeed'] = int(data['current']['wind_speed'])
-    now['windDir'] = utils.get_direction(int(data['current']['wind_deg']))
+    feels = int(data['current']['feels_like'])
+    windSpeed = int(data['current']['wind_speed'])
+    windDir = utils.get_direction(int(data['current']['wind_deg']))
+    now['summary'] = f"{windSpeed} mph {windDir} wind, feels like {feels}°" 
     result['now'] = now
 
     hourly = list()
@@ -94,7 +96,7 @@ class OpenWeatherAPI:
       with open(debug_json) as r:
         return json.load(r)
 
-    API_URL = f"{OPEN_WEATHER_API_ENDPOINT}?lat={lat}&lon={lon}&appid={self._api_key}&units=imperial&lang=en"
+    API_URL = f"{OpenWeatherAPI.api_endpoint}?lat={lat}&lon={lon}&appid={self.__api_key}&units=imperial&lang=en"
     r = requests.get(API_URL)
 
     if debug_json:
