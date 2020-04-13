@@ -85,4 +85,4 @@ def index():
 if __name__ == '__main__':
   app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
   from waitress import serve
-  serve(app)
+  serve(app, ident='Server')
