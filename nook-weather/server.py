@@ -49,18 +49,28 @@ def get_forecast():
 
   return api.forecast(lat, lon)
 
+cached_data = None
 def process_data():
-  data = get_forecast()
+  global cached_data
+  try:
+    data = get_forecast()
 
-  info = {}
-  timestamp = time.localtime()
-  info['day'] = time.strftime('%a', timestamp)
-  info['date'] = time.strftime('%d', timestamp)
-  info['quote'] = get_quote()
-  info['api_provider'] = os.environ['WEATHER_API_PROVIDER']
+    info = {}
+    timestamp = time.localtime()
+    info['day'] = time.strftime('%a', timestamp)
+    info['date'] = time.strftime('%d', timestamp)
+    info['quote'] = get_quote()
+    info['api_provider'] = os.environ['WEATHER_API_PROVIDER']
+    data['info'] = info
 
-  data['info'] = info
-  return(data)
+    cached_data = data
+    return(data)
+  except Exception as e:
+    if cached_data:
+      # return last good cache if failed
+      return cached_data
+    # otherwise re-throw the exception
+    raise
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 @app.route('/')
