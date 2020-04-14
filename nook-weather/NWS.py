@@ -153,18 +153,23 @@ class NWSAPI:
 
     return result
 
-  def __api_call(self, lat, lon):
+  def __api_call(self, url):
+    r = requests.get(url, headers=self.__headers)
+    if r.status_code >= 400:
+      raise Exception(f"REST API failed ({r.status_code}): {url}")
+    return r.json()
+
+  def __get_forecast_url(self, lat, lon):
     api_url = f"{NWSAPI.api_endpoint}/{lat},{lon}"
-    r = requests.get(api_url, headers=self.__headers)
-    return(r.json())
+    station_info = self.__api_call(api_url)
+    # half day forecast up to 7 days
+    forecast_url = station_info['properties']['forecast']
+    # hourly forecast up to 156 hours (6.5 days)
+    hourly_url = station_info['properties']['forecastHourly']
+    return forecast_url, hourly_url
 
   def forecast(self, lat, lon):
-    station_info = self.__api_call(lat, lon)
-    # hourly forecast up to 156 hours (6.5 days)
-    hourly_forecast_api_endpoint = station_info['properties']['forecastHourly']
-    # half day forecast up to 7 days
-    forecast_api_endpoint = station_info['properties']['forecast']
-
-    hourly_result = requests.get(hourly_forecast_api_endpoint, headers=self.__headers).json()
-    daily_result = requests.get(forecast_api_endpoint, headers=self.__headers).json()
+    forecast_url, hourly_url = self.__get_forecast_url(lat, lon)
+    daily_result = self.__api_call(forecast_url)
+    hourly_result = self.__api_call(hourly_url)
     return self.__map_api_data(hourly_result, daily_result)

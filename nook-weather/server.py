@@ -3,6 +3,7 @@
 import os
 import time
 import random
+import logging
 
 from DarkSky import DarkSkyAPI
 from OpenWeather import OpenWeatherAPI
@@ -54,6 +55,7 @@ def process_data():
   global cached_data
   try:
     data = get_forecast()
+    logger.info(f"Forecast: {data['now']['temp']}")
 
     info = {}
     timestamp = time.localtime()
@@ -66,6 +68,7 @@ def process_data():
     cached_data = data
     return(data)
   except Exception as e:
+    logger.error(f"Failed to get forecast: {e}")
     if cached_data:
       # return last good cache if failed, add an indicator too
       cached_data['info']['api_provider'] += '*'
@@ -83,6 +86,16 @@ def index():
   except Exception as e:
     return f"System error: {e}"
 
+AppName = "nook-weather"
+LOGFILE = f"/tmp/{AppName}.log"
+logger = logging.getLogger(f"{AppName}")
+def init_logger():
+  fileHandler = logging.FileHandler(LOGFILE)
+  fileHandler.setFormatter(logging.Formatter("%(asctime)s: %(levelname)s - %(message)s"))
+  logger.addHandler(fileHandler)
+  logger.setLevel(logging.INFO)
+
+init_logger()
 if __name__ == '__main__':
   app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
   from waitress import serve
