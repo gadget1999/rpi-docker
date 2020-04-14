@@ -78,10 +78,11 @@ class NWSAPI:
 
     # NWS half day series starts from current time until the 6:00/18:00 marks
     start_time = time.strptime(daily_data['properties']['periods'][0]['startTime'], "%Y-%m-%dT%H:%M:%S%z")
+    current_temperature = int(hourly_data['properties']['periods'][0]['temperature'])
     if start_time.tm_hour > 18:
       # now is night, use current temperature as high and lowest as low
       tonight_index = 0
-      daily_high = int(hourly_data['properties']['periods'][0]['temperature'])
+      daily_high = current_temperature
       daily_low = int(daily_data['properties']['periods'][tonight_index]['temperature'])
     elif start_time.tm_hour < 6:
       # now is early-morning, day is 6-18 (high) and night is after that (low)
@@ -93,6 +94,12 @@ class NWSAPI:
       tonight_index = 1
       daily_high = int(daily_data['properties']['periods'][tonight_index-1]['temperature'])
       daily_low = int(daily_data['properties']['periods'][tonight_index]['temperature'])
+
+    # adjust for partial data (e.g., start time in the middle)
+    if current_temperature > daily_high:
+      daily_high = current_temperature
+    if current_temperature < daily_low:
+      daily_low = current_temperature
 
     # track daily high/low
     today = time.strftime('%Y-%m-%d', start_time)
@@ -109,7 +116,7 @@ class NWSAPI:
     now = {}
     localtime = time.localtime()
     now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
-    now['temp'] = int(hourly_data['properties']['periods'][0]['temperature'])
+    now['temp'] = current_temperature
     now['high'] = NWSAPI.daily_high
     now['low'] = NWSAPI.daily_low
     now['cond'] = hourly_data['properties']['periods'][0]['shortForecast']

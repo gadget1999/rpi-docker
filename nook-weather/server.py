@@ -67,7 +67,8 @@ def process_data():
     return(data)
   except Exception as e:
     if cached_data:
-      # return last good cache if failed
+      # return last good cache if failed, add an indicator too
+      cached_data['info']['api_provider'] += '*'
       return cached_data
     # otherwise re-throw the exception
     raise
