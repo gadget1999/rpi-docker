@@ -4,6 +4,7 @@ import os
 import time
 import random
 import logging
+from threading import RLock
 
 from DarkSky import DarkSkyAPI
 from OpenWeather import OpenWeatherAPI
@@ -50,15 +51,24 @@ def get_forecast():
 
   return api.forecast(lat, lon)
 
+lock = RLock()
+last_request_time = time.localtime(0)
 cached_data = None
 def process_data():
+  global last_request_time
   global cached_data
   try:
+    lock.acquire()
+    timestamp = time.localtime()
+    if time.mktime(timestamp) - time.mktime(last_request_time) < 60:
+      if cached_data:
+        return cached_data
+
     data = get_forecast()
+    last_request_time = timestamp
     logger.info(f"Forecast: {data['now']['temp']}")
 
     info = {}
-    timestamp = time.localtime()
     info['day'] = time.strftime('%a', timestamp)
     info['date'] = time.strftime('%d', timestamp)
     info['quote'] = get_quote()
@@ -75,6 +85,8 @@ def process_data():
       return cached_data
     # otherwise re-throw the exception
     raise
+  finally:
+    lock.release()
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 @app.route('/')
