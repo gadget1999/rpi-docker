@@ -66,7 +66,7 @@ def process_data():
 
     data = get_forecast()
     last_request_time = timestamp
-    logger.info(f"Temperature: {data['now']['temp']} ({data['now']['cond']})")
+    logger.info(f"{data['now']['api_provider']}: {data['now']['cond']}, {data['now']['temp']}°")
 
     info = {}
     info['day'] = time.strftime('%a', timestamp)
