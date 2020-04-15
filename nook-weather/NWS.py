@@ -138,6 +138,8 @@ class NWSAPI:
 
     daily = list()
     for i in range(tonight_index+1, tonight_index+12, 2):
+      if i > 12: # only 14 entries (max index is 13)
+        continue
       forecast_day = daily_data['properties']['periods'][i]
       forecast_night = daily_data['properties']['periods'][i+1]
       localtime = time.strptime(forecast_day['startTime'], "%Y-%m-%dT%H:%M:%S%z")

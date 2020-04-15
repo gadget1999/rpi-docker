@@ -100,12 +100,15 @@ def index():
 
 AppName = "nook-weather"
 LOGFILE = f"/tmp/{AppName}.log"
+logging.raiseException = False
 logger = logging.getLogger(f"{AppName}")
 def init_logger():
-  fileHandler = logging.FileHandler(LOGFILE)
-  fileHandler.setFormatter(logging.Formatter("%(asctime)s: %(levelname)s - %(message)s"))
-  logger.addHandler(fileHandler)
+  if os.path.isfile(LOGFILE):
+    fileHandler = logging.FileHandler(LOGFILE)
+    fileHandler.setFormatter(logging.Formatter("%(asctime)s: %(levelname)s - %(message)s"))
+    logger.addHandler(fileHandler)
   logger.setLevel(logging.INFO)
+
 
 init_logger()
 if __name__ == '__main__':
