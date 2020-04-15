@@ -37,6 +37,10 @@ def get_icon_path(icon):
 class OpenWeatherAPI:
   api_endpoint = "https://api.openweathermap.org/data/2.5/onecall"
 
+  @property
+  def name(self):
+    return 'OpenWeather'
+
   def __init__(self, app_key):
     self.__api_key = app_key
 
@@ -49,6 +53,7 @@ class OpenWeatherAPI:
     result = {}
 
     now = {}
+    now['api_provider'] = self.name
     localtime = time.localtime(data['current']['dt'])
     now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
     now['temp'] = int(data['current']['temp'])

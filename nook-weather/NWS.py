@@ -60,6 +60,10 @@ def get_icon_path(icon_url):
 class NWSAPI:
   api_endpoint = "https://api.weather.gov/points"
 
+  @property
+  def name(self):
+    return 'NWS'
+
   # NWS does not maintain daily high/low
   date = None
   daily_high = -200
@@ -115,6 +119,7 @@ class NWSAPI:
 
     now = {}
     localtime = time.localtime()
+    now['api_provider'] = self.name
     now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
     now['temp'] = current_temperature
     now['high'] = NWSAPI.daily_high

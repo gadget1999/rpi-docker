@@ -13,6 +13,10 @@ def get_icon_path(cond):
 class DarkSkyAPI:
   api_endpoint = "https://api.darksky.net/forecast"
 
+  @property
+  def name(self):
+    return 'DarkSky'
+
   def __init__(self, app_key):
     self.__api_key = app_key
 
@@ -25,6 +29,7 @@ class DarkSkyAPI:
     result = {}
 
     now = {}
+    now['api_provider'] = self.name
     localtime = time.localtime(data['currently']['time'])
     now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
     now['temp'] = int(data['currently']['temperature'])
