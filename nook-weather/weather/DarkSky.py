@@ -3,12 +3,7 @@ import json
 import time
 import requests
 
-import utils
-
-ICON_PATH = "/static/images"
-ICON_EXT = "png"
-def get_icon_path(cond):
-  return f"{ICON_PATH}/{cond}.{ICON_EXT}"
+from .utils import WeatherUtils
 
 class DarkSkyAPI:
   api_endpoint = "https://api.darksky.net/forecast"
@@ -36,10 +31,10 @@ class DarkSkyAPI:
     now['high'] = int(data['daily']['data'][0]['temperatureHigh'])
     now['low'] = int(data['daily']['data'][0]['temperatureLow'])
     now['cond'] = data['currently']['icon']
-    now['icon'] = get_icon_path(now['cond'])
+    now['icon'] = now['cond']
     feels = int(data['currently']['apparentTemperature'])
     windSpeed = int(data['currently']['windSpeed'])
-    windDir = utils.get_direction(int(data['currently']['windBearing']))
+    windDir = WeatherUtils.get_direction(int(data['currently']['windBearing']))
     now['summary'] = f"{windSpeed} mph {windDir} wind, feels like {feels}°" 
     result['now'] = now
 
@@ -48,10 +43,10 @@ class DarkSkyAPI:
       forecast = data['hourly']['data'][i]
       localtime = time.localtime(forecast['time'])
       item = {}
-      item['time'] = utils.get_hour_str(localtime)
+      item['time'] = WeatherUtils.get_hour_str(localtime)
       item['temp'] = int(forecast['temperature'])
       item['cond'] = forecast['icon']
-      item['icon'] = get_icon_path(item['cond'])
+      item['icon'] = item['cond']
       hourly.append(item)
     result['hourly'] = hourly
 
@@ -65,7 +60,7 @@ class DarkSkyAPI:
       item['high'] = int(forecast['temperatureHigh'])
       item['low'] =  int(forecast['temperatureLow'])
       item['cond'] = forecast['icon']
-      item['icon'] = get_icon_path(item['cond'])
+      item['icon'] = item['cond']
       daily.append(item)
     result['daily'] = daily
 

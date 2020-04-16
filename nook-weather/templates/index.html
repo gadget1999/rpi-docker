@@ -11,7 +11,7 @@
       <span class="weekday">{{ info.day }}</span>
       <span class="day">{{ info.date }}</span>
     </div>
-    <img src="{{ now.icon }}" alt="{{ now.cond }}" />
+    <img src="{{ info.icon_path }}/{{ now.icon }}.{{ info.icon_ext }}" alt="{{ now.cond }}" />
     <div id="temp">{{ now.temp }}&deg;</div>
     <div id="highlow">{{ now.high }}&deg;&nbsp;H<br />{{ now.low }}&deg;&nbsp;L</div>
   </div>
@@ -23,7 +23,7 @@
     {% for item in hourly %}
     <span class="next">
       {{ item.time }}
-      <img src="{{ item.icon }}" alt="{{ item.cond }}" />
+      <img src="{{ info.icon_path }}/{{ item.icon }}.{{ info.icon_ext }}" alt="{{ item.cond }}" />
       {{ item.temp }}&deg;
     </span>
     {% endfor %}
@@ -41,7 +41,7 @@
       {{ item.day }}
       <br />
       {{ item.date }}
-      <img src="{{ item.icon }}" alt="{{ item.cond }}" />
+      <img src="{{ info.icon_path }}/{{ item.icon }}.{{ info.icon_ext }}" alt="{{ item.cond }}" />
       {{ item.high }}&deg;<br />{{ item.low }}&deg;
     </span>
     {% endfor %}

@@ -3,15 +3,14 @@
 import os
 import time
 import random
-import logging
-from threading import RLock
-
-from DarkSky import DarkSkyAPI
-from OpenWeather import OpenWeatherAPI
-from NWS import NWSAPI
 
 from flask import Flask
 from flask import render_template
+
+from weather.Forecast import WeatherForecast
+
+import logging
+logger = logging.getLogger()
 
 def get_quote():
   try:
@@ -34,87 +33,27 @@ def get_quote():
   except Exception as e:
     return [f"Failed to get quote: {e}"]
 
-def get_forecast():
+def process_data():
   gps = os.environ['GPS_COORDINATES'].split(",")
   lat = gps[0]
   lon = gps[1]
+  data = WeatherForecast.get_forecast(lat, lon)
+  logger.info(f"{data['now']['api_provider']}: {data['now']['cond']}, {data['now']['temp']}°")
 
-  # try different API providers if previous one(s) failed
-  global api_providers
-  for api_provider in api_providers:
-    try:
-      return api_provider.forecast(lat, lon)
-    except Exception as e:
-      logger.error(f"{api_provider.name} API failed: {e}")
-      continue
+  info = {}
+  timestamp = time.localtime()
+  info['day'] = time.strftime('%a', timestamp)
+  info['date'] = time.strftime('%d', timestamp)
+  info['quote'] = get_quote()
+  info['icon_path'] = 'static/images'
+  info['icon_ext'] = 'png'
+  data['info'] = info
 
-  # if it comes here, means all providers failed
-  raise Exception(f"All weather API providers failed.")
-
-lock = RLock()
-last_request_time = time.localtime(0)
-cached_data = None
-def process_data():
-  global last_request_time
-  global cached_data
-  try:
-    lock.acquire()
-    timestamp = time.localtime()
-    if time.mktime(timestamp) - time.mktime(last_request_time) < 60:
-      if cached_data:
-        return cached_data
-
-    data = get_forecast()
-    last_request_time = timestamp
-    logger.info(f"{data['now']['api_provider']}: {data['now']['cond']}, {data['now']['temp']}°")
-
-    info = {}
-    info['day'] = time.strftime('%a', timestamp)
-    info['date'] = time.strftime('%d', timestamp)
-    info['quote'] = get_quote()
-    data['info'] = info
-
-    cached_data = data
-    return(data)
-  except Exception as e:
-    logger.error(f"Failed to get forecast: {e}")
-    if cached_data:
-      # return last good cache if failed, add an indicator too
-      cached_data['now']['api_provider'] += '*'
-      return cached_data
-    # otherwise re-throw the exception
-    raise
-  finally:
-    lock.release()
-
-api_providers = []
-def init_forecast_api_providers():
-  global api_providers
-
-  # get list of API providers (in case one fails)
-  for i in range(1, 5, 1):
-    if not f"WEATHER_API_PROVIDER_{i}" in os.environ:
-      break
-  
-    name = os.environ[f"WEATHER_API_PROVIDER_{i}"]
-    key = os.environ[f"WEATHER_API_KEY_{i}"]
-    if name.lower() == "nws":
-      api_provider = NWSAPI(key)
-    elif name.lower() == "darksky":
-      api_provider = DarkSkyAPI(key)
-    elif name.lower() == "openweather":
-      api_provider = OpenWeatherAPI(key)
-    else:
-      raise Exception(f"Unknown weather API provider: {name}")
-    api_providers.append(api_provider)
-
-  if not api_providers:
-    raise Exception(f"No weather API providers were found.")
+  return data
 
 AppName = "nook-weather"
 LOGFILE = f"/tmp/{AppName}.log"
 logging.raiseException = False
-logger = logging.getLogger(f"{AppName}")
 def init_logger():
   if os.path.isfile(LOGFILE):
     fileHandler = logging.FileHandler(LOGFILE)
@@ -133,7 +72,7 @@ def index():
     return f"System error: {e}"
 
 init_logger()
-init_forecast_api_providers()
+WeatherForecast.init_from_env()
 if __name__ == '__main__':
   app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
   from waitress import serve

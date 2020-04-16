@@ -4,10 +4,7 @@ import time
 import re
 import requests
 
-import utils
-
-ICON_PATH = "/static/images"
-ICON_EXT = "png"
+from .utils import WeatherUtils
 
 # detailed condition list: https://w1.weather.gov/xml/current_obs/weather.php (old)
 # new mapping: https://saratoga-weather.org/advforecast2.php?sce=view
@@ -44,19 +41,6 @@ NIGHT_ICONS = {
   "sct": "nsct"
   }
 
-def get_icon_path(icon_url):
-  # icon example 1: https://api.weather.gov/icons/land/day/bkn?size=small
-  # icon example 2: https://api.weather.gov/icons/land/night/rain_showers,30/rain_showers,50?size=medium
-  icon_url = icon_url.replace('https://api.weather.gov/icons/land/', '')
-  icon_url = icon_url.split('?')[0] # "day/bkn" or "night/rain_showers,30/rain_showers,50"
-  icon = icon_url.split('/')[1] # "bkn" or "rain_showers,30"
-  icon = icon.split(',')[0] # "bkn" or "rain_showers"
-  # add night decoration to a few conditions
-  if icon_url.startswith('night/'):
-    icon = NIGHT_ICONS.get(icon, icon)
-  standard_icon = ICON_MAPPING.get(icon, 'unknown')
-  return f"{ICON_PATH}/{standard_icon}.{ICON_EXT}"
-
 class NWSAPI:
   api_endpoint = "https://api.weather.gov/points"
 
@@ -71,6 +55,18 @@ class NWSAPI:
 
   def __init__(self, app_key):
     self.__headers = {'User-Agent': app_key}
+
+  def __map_icon_name(icon_url):
+    # icon example 1: https://api.weather.gov/icons/land/day/bkn?size=small
+    # icon example 2: https://api.weather.gov/icons/land/night/rain_showers,30/rain_showers,50?size=medium
+    icon_url = icon_url.replace('https://api.weather.gov/icons/land/', '')
+    icon_url = icon_url.split('?')[0] # "day/bkn" or "night/rain_showers,30/rain_showers,50"
+    icon = icon_url.split('/')[1] # "bkn" or "rain_showers,30"
+    icon = icon.split(',')[0] # "bkn" or "rain_showers"
+    # add night decoration to a few conditions
+    if icon_url.startswith('night/'):
+      icon = NIGHT_ICONS.get(icon, icon)
+    return ICON_MAPPING.get(icon, 'unknown')
 
   # map api return to standard format
   # data schema:
@@ -125,7 +121,7 @@ class NWSAPI:
     now['high'] = NWSAPI.daily_high
     now['low'] = NWSAPI.daily_low
     now['cond'] = hourly_data['properties']['periods'][0]['shortForecast']
-    now['icon'] = get_icon_path(hourly_data['properties']['periods'][0]['icon'])
+    now['icon'] = NWSAPI.__map_icon_name(hourly_data['properties']['periods'][0]['icon'])
     now['summary'] = daily_data['properties']['periods'][0]['detailedForecast']
     result['now'] = now
 
@@ -134,10 +130,10 @@ class NWSAPI:
       forecast_hour = hourly_data['properties']['periods'][i]
       localtime = time.strptime(forecast_hour['startTime'], "%Y-%m-%dT%H:%M:%S%z")
       item = {}
-      item['time'] = utils.get_hour_str(localtime)
+      item['time'] = WeatherUtils.get_hour_str(localtime)
       item['temp'] = int(forecast_hour['temperature'])
       item['cond'] = forecast_hour['shortForecast']
-      item['icon'] = get_icon_path(forecast_hour['icon'])
+      item['icon'] = NWSAPI.__map_icon_name(forecast_hour['icon'])
       hourly.append(item)
     result['hourly'] = hourly
 
@@ -154,7 +150,7 @@ class NWSAPI:
       item['high'] = int(forecast_day['temperature'])
       item['low'] =  int(forecast_night['temperature'])
       item['cond'] = forecast_day['shortForecast']
-      item['icon'] = get_icon_path(forecast_day['icon'])
+      item['icon'] = NWSAPI.__map_icon_name(forecast_day['icon'])
       daily.append(item)
     result['daily'] = daily
 

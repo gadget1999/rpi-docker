@@ -3,10 +3,7 @@ import json
 import time
 import requests
 
-import utils
-
-ICON_PATH = "/static/images"
-ICON_EXT = "png"
+from .utils import WeatherUtils
 
 # detailed condition list: https://openweathermap.org/weather-conditions#Weather-Condition-Codes-2
 ICON_MAPPING = {
@@ -30,10 +27,6 @@ ICON_MAPPING = {
   "50n": "fog"
   }
 
-def get_icon_path(icon):
-  standard_icon = ICON_MAPPING.get(icon, 'unknown')
-  return f"{ICON_PATH}/{standard_icon}.{ICON_EXT}"
-
 class OpenWeatherAPI:
   api_endpoint = "https://api.openweathermap.org/data/2.5/onecall"
 
@@ -43,6 +36,9 @@ class OpenWeatherAPI:
 
   def __init__(self, app_key):
     self.__api_key = app_key
+
+  def __map_icon_name(icon):
+    return ICON_MAPPING.get(icon, 'unknown')
 
   # map api return to standard format
   # data schema:
@@ -60,10 +56,10 @@ class OpenWeatherAPI:
     now['high'] = int(data['daily'][0]['temp']['max'])
     now['low'] = int(data['daily'][0]['temp']['min'])
     now['cond'] = data['current']['weather'][0]['main']
-    now['icon'] = get_icon_path(data['current']['weather'][0]['icon'])
+    now['icon'] = OpenWeatherAPI.__map_icon_name(data['current']['weather'][0]['icon'])
     feels = int(data['current']['feels_like'])
     windSpeed = int(data['current']['wind_speed'])
-    windDir = utils.get_direction(int(data['current']['wind_deg']))
+    windDir = WeatherUtils.get_direction(int(data['current']['wind_deg']))
     now['summary'] = f"{windSpeed} mph {windDir} wind, feels like {feels}°" 
     result['now'] = now
 
@@ -72,10 +68,10 @@ class OpenWeatherAPI:
       forecast = data['hourly'][i]
       localtime = time.localtime(forecast['dt'])
       item = {}
-      item['time'] = utils.get_hour_str(localtime)
+      item['time'] = WeatherUtils.get_hour_str(localtime)
       item['temp'] = int(forecast['temp'])
       item['cond'] = forecast['weather'][0]['main']
-      item['icon'] = get_icon_path(forecast['weather'][0]['icon'])
+      item['icon'] = OpenWeatherAPI.__map_icon_name(forecast['weather'][0]['icon'])
       hourly.append(item)
     result['hourly'] = hourly
 
@@ -89,7 +85,7 @@ class OpenWeatherAPI:
       item['high'] = int(forecast['temp']['max'])
       item['low'] =  int(forecast['temp']['min'])
       item['cond'] = forecast['weather'][0]['main']
-      item['icon'] = get_icon_path(forecast['weather'][0]['icon'])
+      item['icon'] = OpenWeatherAPI.__map_icon_name(forecast['weather'][0]['icon'])
       daily.append(item)
     result['daily'] = daily
 
