@@ -6,6 +6,7 @@ LABEL Description="Weather station for Nook Simple Touch"
 RUN pip3 install requests flask waitress
 
 COPY *.py /
+COPY weather /weather
 COPY static /static
 COPY templates /templates
 
