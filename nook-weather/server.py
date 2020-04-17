@@ -45,6 +45,7 @@ def process_data():
   timestamp = time.localtime()
   info['day'] = time.strftime('%a', timestamp)
   info['date'] = time.strftime('%d', timestamp)
+  info['now'] = time.strftime('%H:%M:%S', timestamp)
   info['quote'] = get_quote()
   info['icon_path'] = 'static/images'
   info['icon_ext'] = 'png'
