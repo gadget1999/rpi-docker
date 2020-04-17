@@ -63,23 +63,20 @@ class DarkSkyAPI:
       item['icon'] = item['cond']
       daily.append(item)
     result['daily'] = daily
-
     return result
 
   def __api_call(self, lat, lon):
-    debug_json = os.environ.get('DEBUG', None)
-    if debug_json and os.path.exists(debug_json):
-      with open(debug_json) as r:
-        return json.load(r)
-
     API_URL = f"{DarkSkyAPI.api_endpoint}/{self.__api_key}/{lat},{lon}?units=us&lang=en"
+    cache = WeatherUtils.load_api_dump(API_URL)
+    if cache:
+      return cache
+
     r = requests.get(API_URL)
+    if r.status_code >= 400:
+      raise Exception(f"REST API failed ({r.status_code}): {url}")
 
-    if debug_json:
-      with open(debug_json, "w") as w:
-        w.write(r.text)
-
-    return(r.json())
+    WeatherUtils.save_api_dump(API_URL, r)
+    return r.json()
 
   def forecast(self, lat, lon):
     api_result = self.__api_call(lat, lon)

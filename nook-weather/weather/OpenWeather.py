@@ -92,18 +92,16 @@ class OpenWeatherAPI:
     return result
 
   def __api_call(self, lat, lon):
-    debug_json = os.environ.get('DEBUG', None)
-    if debug_json and os.path.exists(debug_json):
-      with open(debug_json) as r:
-        return json.load(r)
-
     API_URL = f"{OpenWeatherAPI.api_endpoint}?lat={lat}&lon={lon}&appid={self.__api_key}&units=imperial&lang=en"
+    cache = WeatherUtils.load_api_dump(API_URL)
+    if cache:
+      return cache
+
     r = requests.get(API_URL)
+    if r.status_code >= 400:
+      raise Exception(f"REST API failed ({r.status_code}): {url}")
 
-    if debug_json:
-      with open(debug_json, "w") as w:
-        w.write(r.text)
-
+    WeatherUtils.save_api_dump(API_URL, r)
     return(r.json())
 
   def forecast(self, lat, lon):

@@ -6,6 +6,8 @@ import random
 
 from flask import Flask
 from flask import render_template
+from waitress import serve
+from paste.translogger import TransLogger
 
 from weather.Forecast import WeatherForecast
 
@@ -47,7 +49,6 @@ def process_data():
   info['icon_path'] = 'static/images'
   info['icon_ext'] = 'png'
   data['info'] = info
-
   return data
 
 AppName = "nook-weather"
@@ -61,12 +62,12 @@ def init_logger():
   logger.setLevel(logging.INFO)
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
-@app.route('/')
+@app.route('/forecast')
 def index():
   try:
     data = process_data()
-    return render_template('index.html', now=data['now'], hourly=data['hourly']
-                                     , daily=data['daily'], info=data['info'])
+    return render_template('index.html', now=data['now'], hourly=data['hourly'],
+             daily=data['daily'], info=data['info'])
   except Exception as e:
     return f"System error: {e}"
 
@@ -74,5 +75,4 @@ init_logger()
 WeatherForecast.init_from_env()
 if __name__ == '__main__':
   app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
-  from waitress import serve
-  serve(app, ident='Server')
+  serve(TransLogger(app), ident='Server')

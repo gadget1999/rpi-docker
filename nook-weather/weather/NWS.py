@@ -114,7 +114,7 @@ class NWSAPI:
         NWSAPI.daily_low = daily_low
 
     now = {}
-    localtime = time.localtime()
+    localtime = WeatherUtils.ISO8601_2_local(daily_data['properties']['generatedAt'])
     now['api_provider'] = self.name
     now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
     now['temp'] = current_temperature
@@ -128,7 +128,7 @@ class NWSAPI:
     hourly = list()
     for i in [1, 3, 5, 8, 11, 14]:
       forecast_hour = hourly_data['properties']['periods'][i]
-      localtime = time.strptime(forecast_hour['startTime'], "%Y-%m-%dT%H:%M:%S%z")
+      localtime = WeatherUtils.ISO8601_2_local(forecast_hour['startTime'])
       item = {}
       item['time'] = WeatherUtils.get_hour_str(localtime)
       item['temp'] = int(forecast_hour['temperature'])
@@ -143,7 +143,7 @@ class NWSAPI:
         continue
       forecast_day = daily_data['properties']['periods'][i]
       forecast_night = daily_data['properties']['periods'][i+1]
-      localtime = time.strptime(forecast_day['startTime'], "%Y-%m-%dT%H:%M:%S%z")
+      localtime = WeatherUtils.parse_ISO8601_time(forecast_day['startTime'])
       item = {}
       item['day'] = time.strftime('%a', localtime)
       item['date'] = time.strftime('%m/%d', localtime)
@@ -157,9 +157,15 @@ class NWSAPI:
     return result
 
   def __api_call(self, url):
+    cache = WeatherUtils.load_api_dump(url)
+    if cache:
+      return cache
+
     r = requests.get(url, headers=self.__headers)
     if r.status_code >= 400:
       raise Exception(f"REST API failed ({r.status_code}): {url}")
+
+    WeatherUtils.save_api_dump(url, r)
     return r.json()
 
   def __get_forecast_url(self, lat, lon):
