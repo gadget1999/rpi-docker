@@ -61,6 +61,7 @@ class WeatherForecast:
       if data:
         WeatherForecast.__last_forecast_data = data
         WeatherForecast.__last_request_time = timestamp
+        logger.info(f"{data['now']['api_provider']}: {data['now']['cond']}, {data['now']['temp']}°")
         return data
       else:
         if WeatherForecast.__last_forecast_data:

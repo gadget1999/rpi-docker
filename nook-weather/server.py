@@ -38,7 +38,6 @@ def process_data():
   lat = gps[0]
   lon = gps[1]
   data = WeatherForecast.get_forecast(lat, lon)
-  logger.info(f"{data['now']['api_provider']}: {data['now']['cond']}, {data['now']['temp']}°")
 
   info = {}
   timestamp = time.localtime()
