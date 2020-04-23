@@ -79,7 +79,7 @@ class NWSAPI:
     # NWS half day series starts from current time until the 6:00/18:00 marks
     start_time = time.strptime(daily_data['properties']['periods'][0]['startTime'], "%Y-%m-%dT%H:%M:%S%z")
     current_temperature = int(hourly_data['properties']['periods'][0]['temperature'])
-    if start_time.tm_hour > 18:
+    if start_time.tm_hour >= 18:
       # now is night, use current temperature as high and lowest as low
       tonight_index = 0
       daily_high = current_temperature

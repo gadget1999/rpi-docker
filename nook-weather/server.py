@@ -53,14 +53,20 @@ def process_data():
   return data
 
 AppName = "nook-weather"
-LOGFILE = f"/tmp/{AppName}.log"
 logging.raiseException = False
 def init_logger():
-  if os.path.isfile(LOGFILE):
-    fileHandler = logging.FileHandler(LOGFILE)
+  # Flask logging (application logs)
+  app_logfile = f"/tmp/{AppName}.log"
+  if os.path.isfile(app_logfile):
+    fileHandler = logging.FileHandler(app_logfile)
     fileHandler.setFormatter(logging.Formatter("%(asctime)s: %(levelname)s - %(message)s"))
     logger.addHandler(fileHandler)
   logger.setLevel(logging.INFO)
+  # Waitress access logging (web server logs)
+  wsgi_logger = logging.getLogger('wsgi')
+  access_logfile = f"/tmp/{AppName}-access.log"
+  wsgi_logger.addHandler(logging.FileHandler(access_logfile))
+  wsgi_logger.setLevel(logging.DEBUG)
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 @app.route('/forecast')
