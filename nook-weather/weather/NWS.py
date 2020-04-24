@@ -33,7 +33,7 @@ ICON_MAPPING = {
   "wind_ovc": "wind",
   "wind_sct": "wind",
   "wind_skc": "wind",
-  "fg": "fog"
+  "fog": "fog"
   }
 NIGHT_ICONS = {
   "skc": "nskc",
@@ -66,7 +66,7 @@ class NWSAPI:
     # add night decoration to a few conditions
     if icon_url.startswith('night/'):
       icon = NIGHT_ICONS.get(icon, icon)
-    return ICON_MAPPING.get(icon, 'unknown')
+    return ICON_MAPPING.get(icon, icon)
 
   # map api return to standard format
   # data schema:
