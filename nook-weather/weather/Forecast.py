@@ -24,7 +24,7 @@ class WeatherForecast:
         break
   
       name = os.environ[f"WEATHER_API_PROVIDER_{i}"]
-      key = os.environ[f"WEATHER_API_KEY_{i}"]
+      key = os.environ[f"WEATHER_API_KEY_{i}"].strip('\"')
       if name.lower() == "nws":
         api_provider = NWSAPI(key)
       elif name.lower() == "darksky":

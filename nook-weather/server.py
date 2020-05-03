@@ -53,14 +53,17 @@ def process_data():
   return data
 
 AppName = "nook-weather"
-logging.raiseException = False
 def init_logger():
   # Flask logging (application logs)
   app_logfile = f"/tmp/{AppName}.log"
-  if os.path.isfile(app_logfile):
+
+  try:
     fileHandler = logging.FileHandler(app_logfile)
     fileHandler.setFormatter(logging.Formatter("%(asctime)s: %(levelname)s - %(message)s"))
     logger.addHandler(fileHandler)
+  except Exception as e: 
+    print(f"Cannot open log file: {e}")
+
   logger.setLevel(logging.INFO)
   # Waitress access logging (web server logs)
   wsgi_logger = logging.getLogger('wsgi')
