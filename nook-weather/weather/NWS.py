@@ -24,6 +24,7 @@ ICON_MAPPING = {
   "tsra": "thunderstorm",
   "tsra_sct": "thunderstorm",
   "tsra_hi": "thunderstorm",
+  "tropical_storm": "thunderstorm",
   "snow": "snow",
   "rain_snow": "snow",
   "snow_fzra": "snow",
