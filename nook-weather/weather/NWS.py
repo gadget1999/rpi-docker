@@ -10,6 +10,7 @@ from .utils import WeatherUtils
 # new mapping: https://saratoga-weather.org/advforecast2.php?sce=view
 ICON_MAPPING = {
   "skc": "clear-day",
+  "sunny": "clear-day",
   "nskc": "clear-night",
   "few": "clear-day",
   "nfew": "clear-night",
