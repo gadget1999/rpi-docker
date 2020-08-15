@@ -48,7 +48,7 @@ class WeatherUtils:
           return json.load(r)
 
   def save_api_dump(url, r):
-    if 'DEBUG' in os.environ:
+    if 'DEBUG' in os.environ or os.path.exists('/tmp/dump-api.flag'):
       hash = binascii.crc32(url.encode('utf8'))
       debug_json = f"/tmp/{hash}.json"
       with open(debug_json, "w") as w:
