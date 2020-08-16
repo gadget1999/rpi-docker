@@ -56,7 +56,10 @@ class NWSAPI:
   daily_low = 200
 
   def __init__(self, app_key):
-    self.__headers = {'User-Agent': app_key}
+    #self.__headers = {'User-Agent': app_key}
+    # use Chrome user-agent as APP_KEY may not get latest data
+    chrom_user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 Edg/84.0.522.59'
+    self.__headers = {'User-Agent': chrom_user_agent}
 
   def __map_icon_name(icon_url):
     # icon example 1: https://api.weather.gov/icons/land/day/bkn?size=small
