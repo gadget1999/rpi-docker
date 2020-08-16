@@ -52,4 +52,5 @@ class WeatherUtils:
       hash = binascii.crc32(url.encode('utf8'))
       debug_json = f"/tmp/{hash}.json"
       with open(debug_json, "w") as w:
+        w.write(f"URL: {url}\r\n")
         w.write(r.text)
