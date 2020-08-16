@@ -1,6 +1,6 @@
 import os
 import json
-import time
+from datetime import datetime, timezone
 import re
 import requests
 
@@ -56,10 +56,7 @@ class NWSAPI:
   daily_low = 200
 
   def __init__(self, app_key):
-    #self.__headers = {'User-Agent': app_key}
-    # use Chrome user-agent as APP_KEY may not get latest data
-    chrom_user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36 Edg/84.0.522.59'
-    self.__headers = {'User-Agent': chrom_user_agent}
+    self.__headers = {'User-Agent': app_key}
 
   def __map_icon_name(icon_url):
     # icon example 1: https://api.weather.gov/icons/land/day/bkn?size=small
@@ -81,15 +78,23 @@ class NWSAPI:
   def __map_api_data(self, hourly_data, daily_data):
     result = {}
 
+    # Sometimes NWS will not return latest data, check freshness first
+    report_time = datetime.fromisoformat(daily_data['properties']['generatedAt'])
+    current_time = datetime.now(timezone.utc)
+    elapsed = (current_time - report_time).total_seconds()
+    if (elapsed > 7200):
+      raise Exception(f"API result is too old: {report_time.isoformat()}")
+
     # NWS half day series starts from current time until the 6:00/18:00 marks
-    start_time = time.strptime(daily_data['properties']['periods'][0]['startTime'], "%Y-%m-%dT%H:%M:%S%z")
+    start_time = datetime.fromisoformat(daily_data['properties']['periods'][0]['startTime'])
+    # assembly daily high/low
     current_temperature = int(hourly_data['properties']['periods'][0]['temperature'])
-    if start_time.tm_hour >= 18:
+    if start_time.hour >= 18:
       # now is night, use current temperature as high and lowest as low
       tonight_index = 0
       daily_high = current_temperature
       daily_low = int(daily_data['properties']['periods'][tonight_index]['temperature'])
-    elif start_time.tm_hour < 6:
+    elif start_time.hour < 6:
       # now is early-morning, day is 6-18 (high) and night is after that (low)
       tonight_index = 2
       daily_high = int(daily_data['properties']['periods'][tonight_index-1]['temperature'])
@@ -107,7 +112,7 @@ class NWSAPI:
       daily_low = current_temperature
 
     # track daily high/low
-    today = time.strftime('%Y-%m-%d', start_time)
+    today = start_time.strftime('%Y-%m-%d')
     if today != NWSAPI.date:
       NWSAPI.date = today
       NWSAPI.daily_high = daily_high
@@ -119,9 +124,9 @@ class NWSAPI:
         NWSAPI.daily_low = daily_low
 
     now = {}
-    localtime = WeatherUtils.ISO8601_2_local(daily_data['properties']['generatedAt'])
+    localtime = datetime.fromisoformat(daily_data['properties']['generatedAt']).astimezone()
     now['api_provider'] = self.name
-    now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
+    now['time'] = localtime.strftime('%Y-%m-%d %H:%M:%S')
     now['temp'] = current_temperature
     now['high'] = NWSAPI.daily_high
     now['low'] = NWSAPI.daily_low
@@ -133,9 +138,9 @@ class NWSAPI:
     hourly = list()
     for i in [1, 3, 5, 8, 11, 14]:
       forecast_hour = hourly_data['properties']['periods'][i]
-      localtime = WeatherUtils.ISO8601_2_local(forecast_hour['startTime'])
+      localtime = datetime.fromisoformat(forecast_hour['startTime']).astimezone()
       item = {}
-      item['time'] = WeatherUtils.get_hour_str(localtime)
+      item['time'] = WeatherUtils.get_am_pm_hour_str(localtime)
       item['temp'] = int(forecast_hour['temperature'])
       item['cond'] = forecast_hour['shortForecast']
       item['icon'] = NWSAPI.__map_icon_name(forecast_hour['icon'])
@@ -148,10 +153,10 @@ class NWSAPI:
         continue
       forecast_day = daily_data['properties']['periods'][i]
       forecast_night = daily_data['properties']['periods'][i+1]
-      localtime = WeatherUtils.parse_ISO8601_time(forecast_day['startTime'])
+      localtime = datetime.fromisoformat(forecast_day['startTime'])
       item = {}
-      item['day'] = time.strftime('%a', localtime)
-      item['date'] = time.strftime('%m/%d', localtime)
+      item['day'] = localtime.strftime('%a')
+      item['date'] = localtime.strftime('%m/%d')
       item['high'] = int(forecast_day['temperature'])
       item['low'] =  int(forecast_night['temperature'])
       item['cond'] = forecast_day['shortForecast']

@@ -1,6 +1,6 @@
 import os
 import json
-import time
+from datetime import datetime
 import requests
 
 from .utils import WeatherUtils
@@ -25,8 +25,8 @@ class DarkSkyAPI:
 
     now = {}
     now['api_provider'] = self.name
-    localtime = time.localtime(data['currently']['time'])
-    now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
+    localtime = datetime.fromtimestamp(data['currently']['time'])
+    now['time'] = localtime.strftime('%Y-%m-%d %H:%M:%S')
     now['temp'] = int(data['currently']['temperature'])
     now['high'] = int(data['daily']['data'][0]['temperatureHigh'])
     now['low'] = int(data['daily']['data'][0]['temperatureLow'])
@@ -41,9 +41,9 @@ class DarkSkyAPI:
     hourly = list()
     for i in [1, 3, 5, 8, 11, 14]:
       forecast = data['hourly']['data'][i]
-      localtime = time.localtime(forecast['time'])
+      localtime = datetime.fromtimestamp(forecast['time'])
       item = {}
-      item['time'] = WeatherUtils.get_hour_str(localtime)
+      item['time'] = WeatherUtils.get_am_pm_hour_str(localtime)
       item['temp'] = int(forecast['temperature'])
       item['cond'] = forecast['icon']
       item['icon'] = item['cond']
@@ -53,10 +53,10 @@ class DarkSkyAPI:
     daily = list()
     for i in range(1, 7):
       forecast = data['daily']['data'][i]
-      localtime = time.localtime(forecast['time'])
+      localtime = datetime.fromtimestamp(forecast['time'])
       item = {}
-      item['day'] = time.strftime('%a', localtime)
-      item['date'] = time.strftime('%m/%d', localtime)
+      item['day'] = localtime.strftime('%a')
+      item['date'] = localtime.strftime('%m/%d')
       item['high'] = int(forecast['temperatureHigh'])
       item['low'] =  int(forecast['temperatureLow'])
       item['cond'] = forecast['icon']

@@ -1,7 +1,7 @@
 import os
 import json
 import platform
-import time
+import datetime
 import binascii
 
 class WeatherUtils:
@@ -21,23 +21,11 @@ class WeatherUtils:
       if bearing >= v[0] and bearing < v[1]:
         return k
 
-  def get_hour_str(timestamp):
+  def get_am_pm_hour_str(timestamp):
     if platform.system() == 'Windows':
-      return time.strftime('%#I %p', timestamp)
+      return timestamp.strftime('%#I %p')
     else:
-      return time.strftime('%-I %p', timestamp)
-
-  def parse_ISO8601_time(time_str):
-    return time.strptime(time_str, "%Y-%m-%dT%H:%M:%S%z")
-
-  def ISO8601_2_local(time_str):
-    t = WeatherUtils.parse_ISO8601_time(time_str)
-    if t.tm_gmtoff != 0:
-      return t
-
-    tmp_localtime = time.localtime()
-    localtime = time.mktime(t) + tmp_localtime.tm_gmtoff
-    return time.localtime(localtime)
+      return timestamp.strftime('%-I %p')
 
   def load_api_dump(url):
     if 'DEBUG' in os.environ:

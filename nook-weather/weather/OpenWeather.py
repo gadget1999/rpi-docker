@@ -1,6 +1,6 @@
 import os
 import json
-import time
+from datetime import datetime
 import requests
 
 from .utils import WeatherUtils
@@ -50,8 +50,8 @@ class OpenWeatherAPI:
 
     now = {}
     now['api_provider'] = self.name
-    localtime = time.localtime(data['current']['dt'])
-    now['time'] = time.strftime('%Y-%m-%d %H:%M:%S', localtime)
+    localtime = datetime.fromtimestamp(data['current']['dt'])
+    now['time'] = localtime.strftime('%Y-%m-%d %H:%M:%S')
     now['temp'] = int(data['current']['temp'])
     now['high'] = int(data['daily'][0]['temp']['max'])
     now['low'] = int(data['daily'][0]['temp']['min'])
@@ -66,9 +66,9 @@ class OpenWeatherAPI:
     hourly = list()
     for i in [1, 3, 5, 8, 11, 14]:
       forecast = data['hourly'][i]
-      localtime = time.localtime(forecast['dt'])
+      localtime = datetime.fromtimestamp(forecast['dt'])
       item = {}
-      item['time'] = WeatherUtils.get_hour_str(localtime)
+      item['time'] = WeatherUtils.get_am_pm_hour_str(localtime)
       item['temp'] = int(forecast['temp'])
       item['cond'] = forecast['weather'][0]['main']
       item['icon'] = OpenWeatherAPI.__map_icon_name(forecast['weather'][0]['icon'])
@@ -78,10 +78,10 @@ class OpenWeatherAPI:
     daily = list()
     for i in range(1, 7):
       forecast = data['daily'][i]
-      localtime = time.localtime(forecast['dt'])
+      localtime = datetime.fromtimestamp(forecast['dt'])
       item = {}
-      item['day'] = time.strftime('%a', localtime)
-      item['date'] = time.strftime('%m/%d', localtime)
+      item['day'] = localtime.strftime('%a')
+      item['date'] = localtime.strftime('%m/%d')
       item['high'] = int(forecast['temp']['max'])
       item['low'] =  int(forecast['temp']['min'])
       item['cond'] = forecast['weather'][0]['main']
