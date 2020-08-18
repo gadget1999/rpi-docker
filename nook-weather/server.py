@@ -15,31 +15,12 @@ from misc.quotes import Quotes
 import logging
 logger = logging.getLogger()
 
-def get_quote1():
-  try:
-    debug = os.environ.get('DEBUG', None)
-    if debug:
-      return ["DEBUG"]
-
-    quotes_folder="/quotes"
-    quote_filename=random.choice(os.listdir(quotes_folder))
-    quote_file=os.path.join(quotes_folder, quote_filename)
-    lines=[]
-    with open(quote_file, 'r') as quotefile:
-      line = quotefile.readline()
-      while line:
-        line=line.strip()
-        if (line):
-          lines.append(line)
-        line = quotefile.readline()
-    return lines
-  except Exception as e:
-    return [f"Failed to get quote: {e}"]
-
 def get_quote():
   try:
-    Quotes.init_quotes('/quotes/idioms.csv')
-    return Quotes.get_one_quote()
+    quote_file = os.environ['QUOTE_FILE']
+    Quotes.init_quotes(quote_file)
+    format = True if 'QUOTE_FORMAT' in os.environ else False
+    return Quotes.get_one_quote(format)
   except Exception as e:
     return [f"Failed to get quote: {e}"]
 

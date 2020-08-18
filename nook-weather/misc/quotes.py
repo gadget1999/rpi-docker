@@ -15,16 +15,24 @@ class Quotes:
       with open (quotes_csv, "r", encoding="utf-8") as csvfile:
         reader = csv.reader(csvfile)
         for row in reader:
-          Quotes.quotes.append(row)
+          if row:
+            Quotes.quotes.append(row)
     finally:
       Quotes.__lock.release()
 
-  def get_one_quote():
+  def get_one_quote(replace_newline=False):
     i = random.randint(1, len(Quotes.quotes))
     quote = Quotes.quotes[i]
-    lines=[]
+    lines = []
     for line in quote:
-      line=line.strip()
-      if (line):
-        lines.append(f"{line}\n")
+      line = line.strip()
+      if not line:
+        continue
+      if replace_newline:
+        formatted_lines = line.split('。')
+        for formatted_line in formatted_lines:
+          if formatted_line:
+            lines.append(formatted_line)
+      else:
+        lines.append(line)
     return lines
