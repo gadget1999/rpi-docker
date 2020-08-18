@@ -10,11 +10,12 @@ from waitress import serve
 from paste.translogger import TransLogger
 
 from weather.Forecast import WeatherForecast
+from misc.quotes import Quotes
 
 import logging
 logger = logging.getLogger()
 
-def get_quote():
+def get_quote1():
   try:
     debug = os.environ.get('DEBUG', None)
     if debug:
@@ -32,6 +33,13 @@ def get_quote():
           lines.append(line)
         line = quotefile.readline()
     return lines
+  except Exception as e:
+    return [f"Failed to get quote: {e}"]
+
+def get_quote():
+  try:
+    Quotes.init_quotes('/quotes/idioms.csv')
+    return Quotes.get_one_quote()
   except Exception as e:
     return [f"Failed to get quote: {e}"]
 
