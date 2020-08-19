@@ -20,7 +20,7 @@ class Quotes:
     finally:
       Quotes.__lock.release()
 
-  def get_one_quote(replace_newline=False):
+  def get_one_quote():
     i = random.randint(1, len(Quotes.quotes))
     quote = Quotes.quotes[i]
     lines = []
@@ -28,11 +28,8 @@ class Quotes:
       line = line.strip()
       if not line:
         continue
-      if replace_newline:
-        formatted_lines = line.split('。')
-        for formatted_line in formatted_lines:
-          if formatted_line:
-            lines.append(formatted_line)
-      else:
-        lines.append(line)
+      formatted_lines = line.split('¶')
+      for formatted_line in formatted_lines:
+        if formatted_line:
+          lines.append(formatted_line)
     return lines

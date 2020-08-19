@@ -19,8 +19,7 @@ def get_quote():
   try:
     quote_file = os.environ['QUOTE_FILE']
     Quotes.init_quotes(quote_file)
-    format = True if 'QUOTE_FORMAT' in os.environ else False
-    return Quotes.get_one_quote(format)
+    return Quotes.get_one_quote()
   except Exception as e:
     return [f"Failed to get quote: {e}"]
 
