@@ -79,7 +79,11 @@ class NWSAPI:
     result = {}
 
     # Sometimes NWS will not return latest data, check freshness first
-    report_time = datetime.fromisoformat(daily_data['properties']['generatedAt'])
+    report_times = []
+    report_times.append(datetime.fromisoformat(daily_data['properties']['generatedAt']))
+    report_times.append(datetime.fromisoformat(hourly_data['properties']['generatedAt']))
+    report_time = min(report_times)
+
     current_time = datetime.now(timezone.utc)
     elapsed = (current_time - report_time).total_seconds()
     if (elapsed > 7200):
