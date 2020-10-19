@@ -1,6 +1,6 @@
 #!/opt/bin/bash
 
-#USAGE: netspeed -u limit -d limit | -s
+# Usage: netspeed -u limit -d limit | -s
 usage="$(basename "$0") -l speed_limit | -s
   -u speed_limit: upload speed limit with units (eg. 1mbit, 100kbit)
   -d speed_limit: download speed limit with units (eg. 1mbit, 100kbit)
