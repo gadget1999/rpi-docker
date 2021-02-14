@@ -29,6 +29,8 @@ ICON_MAPPING = {
   "snow": "snow",
   "rain_snow": "snow",
   "snow_fzra": "snow",
+  "fzra": "sleet",
+  "rain_fzra": "sleet",
   "snow_sleet": "sleet",
   "wind_bkn": "wind",
   "wind_few": "wind",
