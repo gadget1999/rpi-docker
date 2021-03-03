@@ -6,9 +6,9 @@ LABEL Description="FTP container for Raspberry Pi"
 RUN apk --no-cache add vsftpd
 
 COPY run.sh /bin/start_vsftpd.sh
+RUN chmod u+x /bin/start_vsftpd.sh
 COPY vsftpd.conf /etc/vsftpd/vsftpd.conf
 
 EXPOSE 21 21000-21010
-VOLUME /ftp/ftp
 
 ENTRYPOINT ["/bin/start_vsftpd.sh"]
