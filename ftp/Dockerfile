@@ -12,4 +12,6 @@ COPY vsftpd.conf /etc/vsftpd/vsftpd.conf
 EXPOSE 21 21000-21010
 VOLUME /ftp/ftp
 
+STOPSIGNAL SIGTERM
+
 ENTRYPOINT ["/bin/start_vsftpd.sh"]
