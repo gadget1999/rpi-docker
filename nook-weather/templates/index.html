@@ -48,7 +48,7 @@
     {% endfor %}
   </div>
 
-  <div id="footer">{{ now.api_provider }} forecated at {{ now.time }} (fetch time: {{ info.now }})</div>
+  <div id="footer">{{ now.api_provider }} @ {{ now.time }} ({{request.remote_addr}} @ {{ info.now }})</div>
 
 </div>
 </body>
