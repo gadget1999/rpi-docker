@@ -21,7 +21,7 @@ class Quotes:
       Quotes.__lock.release()
 
   def get_one_quote():
-    i = random.randint(1, len(Quotes.quotes))
+    i = random.randint(1, len(Quotes.quotes)-1)
     quote = Quotes.quotes[i]
     lines = []
     for line in quote:
