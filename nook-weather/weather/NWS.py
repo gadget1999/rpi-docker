@@ -37,6 +37,7 @@ ICON_MAPPING = {
   "wind_ovc": "wind",
   "wind_sct": "wind",
   "wind_skc": "wind",
+  "haze": "fog",
   "fog": "fog"
   }
 NIGHT_ICONS = {
