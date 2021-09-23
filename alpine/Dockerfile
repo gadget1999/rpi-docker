@@ -1,5 +1,4 @@
-FROM arm32v7/alpine:latest
-COPY qemu-arm-static /usr/bin
+FROM --platform=linux/arm/v7 alpine:latest
 
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Base Alpine Linux image for Raspberry Pi"
