@@ -64,6 +64,7 @@ class NWSAPI:
   def __map_icon_name(icon_url):
     # icon example 1: https://api.weather.gov/icons/land/day/bkn?size=small
     # icon example 2: https://api.weather.gov/icons/land/night/rain_showers,30/rain_showers,50?size=medium
+    icon_url = icon_url.replace('http://', 'https://')
     icon_url = icon_url.replace('https://api.weather.gov/icons/land/', '')
     icon_url = icon_url.split('?')[0] # "day/bkn" or "night/rain_showers,30/rain_showers,50"
     icon = icon_url.split('/')[1] # "bkn" or "rain_showers,30"
