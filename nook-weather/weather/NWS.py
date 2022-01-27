@@ -200,6 +200,6 @@ class NWSAPI:
 
   def forecast(self, lat, lon):
     forecast_url, hourly_url = self.__get_forecast_url(lat, lon)
-    daily_result = self.__api_call(forecast_url)
+    daily_result = self.__api_call(forecast_url) + "?units=us"  # seems a bug in API that always get old data without this
     hourly_result = self.__api_call(hourly_url)
     return self.__map_api_data(hourly_result, daily_result)
