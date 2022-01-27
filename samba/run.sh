@@ -111,4 +111,4 @@ for folder in ${folders[*]}; do
 done
 
 #su-exec $username /usr/sbin/nmbd -D
-su-exec $username /usr/sbin/smbd -FS --configfile="$CONFIG_FILE" < /dev/null
+su-exec $username /usr/sbin/smbd -F --configfile="$CONFIG_FILE" < /dev/null
