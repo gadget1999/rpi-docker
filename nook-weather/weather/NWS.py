@@ -46,6 +46,9 @@ NIGHT_ICONS = {
   "sct": "nsct"
   }
 
+# API has many timestamps, sometimes it's not current
+TAG_UPDATE_TIME = "updateTime"
+
 class NWSAPI:
   api_endpoint = "https://api.weather.gov/points"
 
@@ -84,8 +87,8 @@ class NWSAPI:
 
     # Sometimes NWS will not return latest data, check freshness first
     report_times = []
-    report_times.append(datetime.fromisoformat(daily_data['properties']['generatedAt']))
-    report_times.append(datetime.fromisoformat(hourly_data['properties']['generatedAt']))
+    report_times.append(datetime.fromisoformat(daily_data['properties'][TAG_UPDATE_TIME]))
+    report_times.append(datetime.fromisoformat(hourly_data['properties'][TAG_UPDATE_TIME]))
     report_time = min(report_times)
 
     current_time = datetime.now(timezone.utc)
@@ -132,7 +135,7 @@ class NWSAPI:
         NWSAPI.daily_low = daily_low
 
     now = {}
-    localtime = datetime.fromisoformat(daily_data['properties']['generatedAt']).astimezone()
+    localtime = datetime.fromisoformat(daily_data['properties'][TAG_UPDATE_TIME]).astimezone()
     now['api_provider'] = self.name
     now['time'] = localtime.strftime('%Y-%m-%d %H:%M:%S')
     now['temp'] = current_temperature
