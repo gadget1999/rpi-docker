@@ -1,4 +1,5 @@
-FROM --platform=linux/arm/v7 alpine:latest
+ARG TARGET_PLATFORM
+FROM ${TARGET_PLATFORM}/alpine
 
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Base Alpine Linux image for Raspberry Pi"

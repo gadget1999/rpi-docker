@@ -1,4 +1,5 @@
-FROM gadget1999/rpi-alpine
+ARG TARGET_PLATFORM
+FROM gadget1999/rpi-alpine:$TARGET_PLATFORM
 
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Samba server for Raspberry Pi"
