@@ -20,6 +20,7 @@ class WeatherUtils:
     for k,v in coords.items():
       if bearing >= v[0] and bearing < v[1]:
         return k
+    return ""
 
   def get_am_pm_hour_str(timestamp):
     if platform.system() == 'Windows':
