@@ -11,6 +11,7 @@ from .utils import WeatherUtils
 ICON_MAPPING = {
   "skc": "clear-day",
   "hot": "clear-day",
+  "cold": "clear-day",
   "nskc": "clear-night",
   "few": "clear-day",
   "nfew": "clear-night",
@@ -47,7 +48,8 @@ NIGHT_ICONS = {
   }
 
 # API has many timestamps, sometimes it's not current
-TAG_UPDATE_TIME = "updateTime"
+#TAG_UPDATE_TIME = "updateTime"
+TAG_UPDATE_TIME = "generatedAt"
 
 class NWSAPI:
   api_endpoint = "https://api.weather.gov/points"
