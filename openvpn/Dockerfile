@@ -1,7 +1,7 @@
 # From GitHub https://github.com/kylemanna/docker-openvpn
 # Forking for more frequent updates
 
-FROM alpine:latest
+FROM gadget1999/rpi-alpine:latest
 
 LABEL maintainer="Kyle Manna <kyle@kylemanna.com>"
 
