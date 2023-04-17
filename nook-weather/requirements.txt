@@ -2,4 +2,4 @@ requests
 Flask
 waitress
 paste
-geopy
+pgeocode

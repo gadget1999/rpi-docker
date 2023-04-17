@@ -3,7 +3,7 @@ import json
 import platform
 import datetime
 import binascii
-import geopy
+import pgeocode
 
 from threading import RLock
 
@@ -56,8 +56,9 @@ class WeatherUtils:
       if zip_code in WeatherUtils.__zip_mapping:
         return WeatherUtils.__zip_mapping[zip_code]
 
-      geolocator = geopy.Nominatim(user_agent='WeatherUtils')
-      location = geolocator.geocode(zip_code)
+      # geopy cannot specify zip code explicitly, so not accurate
+      geolocator = pgeocode.Nominatim('us')
+      location = geolocator.query_postal_code(zip_code)
       coordinates = f"{location.latitude},{location.longitude}"
       WeatherUtils.__zip_mapping[zip_code] = coordinates
       return coordinates

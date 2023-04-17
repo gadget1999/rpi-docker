@@ -15,7 +15,7 @@
             "env": {
               "WEATHER_API_PROVIDER_1":"NWS",
               "WEATHER_API_KEY_1":"nook-weather",
-              "GPS_COORDINATES": "40.6976684,-74.2605725"
+              "GPS_COORDINATES": "40.69,-74.26"
             },
             "type": "python"            
         }
