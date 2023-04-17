@@ -3,9 +3,12 @@ import json
 import platform
 import datetime
 import binascii
-import pgeocode
 
 from threading import RLock
+from geopy import geocoders
+
+import logging
+logger = logging.getLogger()
 
 class WeatherUtils:
   __lock = RLock()
@@ -57,12 +60,13 @@ class WeatherUtils:
         return WeatherUtils.__zip_mapping[zip_code]
 
       # geopy cannot specify zip code explicitly, so not accurate
-      geolocator = pgeocode.Nominatim('us')
-      location = geolocator.query_postal_code(zip_code)
+      geolocator = geocoders.Nominatim(user_agent="Nook-Weather")
+      location = geolocator.geocode({"country":"us", "postalcode":zip_code})
       coordinates = f"{location.latitude},{location.longitude}"
       WeatherUtils.__zip_mapping[zip_code] = coordinates
       return coordinates
     except Exception as e:
+      logger.error(f"Failed to get gps coordinates from zip {zip_code}: {e}")
       return None
     finally:
       WeatherUtils.__lock.release()
