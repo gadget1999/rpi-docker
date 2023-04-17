@@ -2,15 +2,15 @@
 
 import os
 import time
-import random
 
-from flask import Flask
+from flask import Flask, request
 from flask import render_template
 from waitress import serve
 from paste.translogger import TransLogger
 
 from weather.Forecast import WeatherForecast
 from misc.quotes import Quotes
+from weather.utils import WeatherUtils
 
 import logging
 logger = logging.getLogger()
@@ -23,12 +23,8 @@ def get_quote():
   except Exception as e:
     return [f"Failed to get quote: {e}"]
 
-def process_data():
-  gps = os.environ['GPS_COORDINATES'].split(",")
-  lat = gps[0]
-  lon = gps[1]
+def process_data(lat, lon):
   data = WeatherForecast.get_forecast(lat, lon)
-
   info = {}
   timestamp = time.localtime()
   info['day'] = time.strftime('%a', timestamp)
@@ -60,10 +56,22 @@ def init_logger():
   wsgi_logger.setLevel(logging.DEBUG)
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
-@app.route('/forecast')
-def index():
+@app.route('/forecast/')
+def forecast():
   try:
-    data = process_data()
+    gps_coordinates = None
+    if len(request.args) > 0:
+      zip_code = request.args.get('zip_code')
+      gps_coordinates = request.args.get('gps_coordinates')
+    if not gps_coordinates:
+      if zip_code:
+        gps_coordinates = WeatherUtils.get_gps_coordinates(zip_code)
+      if not gps_coordinates:
+        gps_coordinates = os.environ['GPS_COORDINATES']
+    gps = gps_coordinates.split(",")
+    lat = gps[0]
+    lon = gps[1]
+    data = process_data(lat, lon)
     return render_template('index.html', now=data['now'], hourly=data['hourly'],
              daily=data['daily'], info=data['info'])
   except Exception as e:

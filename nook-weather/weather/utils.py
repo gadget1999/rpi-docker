@@ -3,6 +3,7 @@ import json
 import platform
 import datetime
 import binascii
+import geopy
 
 class WeatherUtils:
   def get_direction(bearing):
@@ -43,3 +44,11 @@ class WeatherUtils:
       with open(debug_json, "w") as w:
         w.write(f"URL: {url}\r\n")
         w.write(r.text)
+
+  def get_gps_coordinates(zip_code):
+    try:
+      geolocator = geopy.Nominatim(user_agent='WeatherUtils')
+      location = geolocator.geocode(zip_code)
+      return f"{location.latitude},{location.longitude}"
+    except Exception as e:
+      return None
