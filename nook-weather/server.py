@@ -31,7 +31,7 @@ def process_data(lat, lon):
   info['date'] = time.strftime('%d', timestamp)
   info['now'] = time.strftime('%H:%M:%S', timestamp)
   info['quote'] = get_quote()
-  info['icon_path'] = 'static/images'
+  info['icon_path'] = '/static/images'
   info['icon_ext'] = 'png'
   data['info'] = info
   return data
@@ -56,7 +56,7 @@ def init_logger():
   wsgi_logger.setLevel(logging.DEBUG)
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
-@app.route('/forecast/')
+@app.route('/forecast', strict_slashes=False)
 def forecast():
   try:
     zip_code = None
