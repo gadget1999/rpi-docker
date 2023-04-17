@@ -59,6 +59,7 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 @app.route('/forecast/')
 def forecast():
   try:
+    zip_code = None
     gps_coordinates = None
     if len(request.args) > 0:
       zip_code = request.args.get('zip_code')
