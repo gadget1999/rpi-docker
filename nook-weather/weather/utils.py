@@ -5,7 +5,12 @@ import datetime
 import binascii
 import geopy
 
+from threading import RLock
+
 class WeatherUtils:
+  __lock = RLock()
+  __zip_mapping = {}
+
   def get_direction(bearing):
     coords = {
       'N':  [0, 22.5],
@@ -47,8 +52,16 @@ class WeatherUtils:
 
   def get_gps_coordinates(zip_code):
     try:
+      WeatherUtils.__lock.acquire()
+      if zip_code in WeatherUtils.__zip_mapping:
+        return WeatherUtils.__zip_mapping[zip_code]
+
       geolocator = geopy.Nominatim(user_agent='WeatherUtils')
       location = geolocator.geocode(zip_code)
-      return f"{location.latitude},{location.longitude}"
+      coordinates = f"{location.latitude},{location.longitude}"
+      WeatherUtils.__zip_mapping[zip_code] = coordinates
+      return coordinates
     except Exception as e:
       return None
+    finally:
+      WeatherUtils.__lock.release()

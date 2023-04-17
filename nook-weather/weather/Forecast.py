@@ -14,8 +14,8 @@ logger = logging.getLogger()
 class WeatherForecast:
   __api_providers = []
   __lock = RLock()
-  __last_request_time = time.localtime(0)
-  __last_forecast_data = None
+  __last_request_time = {}
+  __last_forecast_data = {}
 
   def init_from_env():
     # get list of API providers (in case one fails)
@@ -45,10 +45,13 @@ class WeatherForecast:
   def get_forecast(lat, lon):
     try:
       WeatherForecast.__lock.acquire()
+      request_key = f"{lat},{lon}"
+      last_request_time = WeatherForecast.__last_request_time[request_key] \
+        if request_key in WeatherForecast.__last_request_time else time.localtime(0)
       timestamp = time.localtime()
-      if time.mktime(timestamp) - time.mktime(WeatherForecast.__last_request_time) < 60:
-        if WeatherForecast.__last_forecast_data:
-          return WeatherForecast.__last_forecast_data
+      if time.mktime(timestamp) - time.mktime(last_request_time) < 60:
+        if request_key in WeatherForecast.__last_forecast_data:
+          return WeatherForecast.__last_forecast_data[request_key]
 
       data = None
       # try different API providers if previous one(s) failed
@@ -62,15 +65,15 @@ class WeatherForecast:
           continue
 
       if data:
-        WeatherForecast.__last_forecast_data = data
-        WeatherForecast.__last_request_time = timestamp
+        WeatherForecast.__last_forecast_data[request_key] = data
+        WeatherForecast.__last_request_time[request_key] = timestamp
         logger.info(f"{data['now']['api_provider']}: {data['now']['cond']}, {data['now']['temp']}°")
         return data
       else:
-        if WeatherForecast.__last_forecast_data:
+        if request_key in WeatherForecast.__last_forecast_data:
           # return last good cache if failed, add an indicator too
-          WeatherForecast.__last_forecast_data['now']['api_provider'] += '*'
-          return WeatherForecast.__last_forecast_data
+          WeatherForecast.__last_forecast_data[request_key]['now']['api_provider'] += '*'
+          return WeatherForecast.__last_forecast_data[request_key]
 
         # otherwise throw exception
         raise Exception(f"All weather API providers failed.")
