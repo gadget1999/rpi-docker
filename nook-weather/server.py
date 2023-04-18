@@ -26,10 +26,12 @@ def get_quote():
 def process_data(lat, lon):
   data = WeatherForecast.get_forecast(lat, lon)
   info = {}
+  report_time = time.strptime(data['now']['time'], '%Y-%m-%d %H:%M:%S')
   timestamp = time.localtime()
   info['day'] = time.strftime('%a', timestamp)
   info['date'] = time.strftime('%d', timestamp)
-  info['now'] = time.strftime('%H:%M:%S', timestamp)
+  info['report_time'] = time.strftime('%b-%d %H:%M:%S', report_time)
+  info['fetch_time'] = time.strftime('%H:%M:%S', timestamp)
   info['location'] = f"{round(float(lat), 2)},{round(float(lon), 2)}"
   info['quote'] = get_quote()
   info['icon_path'] = '/static/images'
