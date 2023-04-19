@@ -1,7 +1,6 @@
-import os
-import json
 from datetime import datetime, timezone
-import re
+from threading import RLock
+
 import requests
 
 from .utils import WeatherUtils
@@ -51,20 +50,46 @@ NIGHT_ICONS = {
 #TAG_UPDATE_TIME = "updateTime"
 TAG_UPDATE_TIME = "generatedAt"
 
-class NWSAPI:
-  api_endpoint = "https://api.weather.gov/points"
+class NWSAPIFactory:
+  __app_key = None
+  __lock = RLock()
+  __workers = {}
 
   @property
   def name(self):
     return 'NWS'
 
-  # NWS does not maintain daily high/low
-  date = None
-  daily_high = -200
-  daily_low = 200
+  def __init__(self, app_key):
+    self.__app_key = app_key
+
+  def __get_worker(self, lat, lon):
+    try:
+      NWSAPIFactory.__lock.acquire()
+      request_key = f"{lat},{lon}"
+      if request_key not in NWSAPIFactory.__workers:
+        worker = NWSAPI(self.__app_key)
+        NWSAPIFactory.__workers[request_key] = worker
+      return NWSAPIFactory.__workers[request_key]
+    finally:
+      NWSAPIFactory.__lock.release()    
+
+  def forecast(self, lat, lon):
+    worker = self.__get_worker(lat, lon)
+    return worker.forecast(lat, lon)
+
+class NWSAPI:
+  __api_endpoint = "https://api.weather.gov/points"
+
+  @property
+  def name(self):
+    return 'NWS'
 
   def __init__(self, app_key):
     self.__headers = {'User-Agent': app_key}
+    # NWS does not maintain daily high/low
+    self.date = None
+    self.daily_high = -200
+    self.daily_low = 200
 
   def __map_icon_name(icon_url):
     # icon example 1: https://api.weather.gov/icons/land/day/bkn?size=small
@@ -126,23 +151,23 @@ class NWSAPI:
 
     # track daily high/low
     today = start_time.strftime('%Y-%m-%d')
-    if today != NWSAPI.date:
-      NWSAPI.date = today
-      NWSAPI.daily_high = daily_high
-      NWSAPI.daily_low = daily_low
+    if today != self.date:
+      self.date = today
+      self.daily_high = daily_high
+      self.daily_low = daily_low
     else:
-      if NWSAPI.daily_high < daily_high:
-        NWSAPI.daily_high = daily_high
-      if NWSAPI.daily_low > daily_low:
-        NWSAPI.daily_low = daily_low
+      if self.daily_high < daily_high:
+        self.daily_high = daily_high
+      if self.daily_low > daily_low:
+        self.daily_low = daily_low
 
     now = {}
     localtime = datetime.fromisoformat(daily_data['properties'][TAG_UPDATE_TIME]).astimezone()
     now['api_provider'] = self.name
     now['time'] = localtime.strftime('%Y-%m-%d %H:%M:%S')
     now['temp'] = current_temperature
-    now['high'] = NWSAPI.daily_high
-    now['low'] = NWSAPI.daily_low
+    now['high'] = self.daily_high
+    now['low'] = self.daily_low
     now['cond'] = hourly_data['properties']['periods'][0]['shortForecast']
     now['icon'] = NWSAPI.__map_icon_name(hourly_data['properties']['periods'][0]['icon'])
     now['summary'] = daily_data['properties']['periods'][0]['detailedForecast']
@@ -192,7 +217,7 @@ class NWSAPI:
     return r.json()
 
   def __get_forecast_url(self, lat, lon):
-    api_url = f"{NWSAPI.api_endpoint}/{lat},{lon}"
+    api_url = f"{NWSAPI.__api_endpoint}/{lat},{lon}"
     station_info = self.__api_call(api_url)
     # half day forecast up to 7 days
     forecast_url = station_info['properties']['forecast']

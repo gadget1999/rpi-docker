@@ -6,7 +6,7 @@ from threading import RLock
 
 from .DarkSky import DarkSkyAPI
 from .OpenWeather import OpenWeatherAPI
-from .NWS import NWSAPI
+from .NWS import NWSAPIFactory
 
 import logging
 logger = logging.getLogger()
@@ -29,7 +29,7 @@ class WeatherForecast:
         continue
 
       if name.lower() == "nws":
-        api_provider = NWSAPI(key)
+        api_provider = NWSAPIFactory(key)
       elif name.lower() == "darksky":
         api_provider = DarkSkyAPI(key)
       elif name.lower() == "openweather":
