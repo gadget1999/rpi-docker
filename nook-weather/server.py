@@ -32,7 +32,7 @@ def process_data(lat, lon):
   info['date'] = time.strftime('%d', timestamp)
   info['report_time'] = time.strftime('%b-%d %H:%M:%S', report_time)
   info['fetch_time'] = time.strftime('%H:%M:%S', timestamp)
-  info['location'] = f"{round(float(lat), 2)},{round(float(lon), 2)}"
+  info['location'] = f"{int(float(lat))},{int(float(lon))}"
   info['quote'] = get_quote()
   info['icon_path'] = '/static/images'
   info['icon_ext'] = 'png'
