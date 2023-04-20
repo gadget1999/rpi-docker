@@ -48,7 +48,13 @@
     {% endfor %}
   </div>
 
-  <div id="footer">{{ now.api_provider }} ({{ info.location }}) | {{ info.report_time }} (fetched @ {{ info.fetch_time }})</div>
+  <div id="footer">
+    {{ now.api_provider }}
+     (<a href="https://www.google.com/maps/@{{ info.location }},9z">{{ info.location }}</a>)
+      | 
+     {{ info.report_time }}
+     (fetched @ {{ info.fetch_time }})
+  </div>
 
 </div>
 </body>
