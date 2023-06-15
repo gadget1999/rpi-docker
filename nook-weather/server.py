@@ -85,4 +85,4 @@ init_logger()
 WeatherForecast.init_from_env()
 if __name__ == '__main__':
   app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 31536000
-  serve(TransLogger(app), ident='Server')
+  serve(TransLogger(app), threads=10, ident='Server')
