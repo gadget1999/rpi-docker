@@ -52,6 +52,8 @@ def init_logger():
     print(f"Cannot open log file: {e}")
 
   logger.setLevel(logging.INFO)
+  # Disable Waitress logging
+  logging.getLogger('waitress').setLevel(logging.WARN)
   # Waitress access logging (web server logs)
   wsgi_logger = logging.getLogger('wsgi')
   access_logfile = f"/tmp/{AppName}-access.log"
