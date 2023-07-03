@@ -6,7 +6,7 @@ LABEL Description="Weather station for Nook Simple Touch"
 RUN python3 -m venv /opt/python3-ven
 
 COPY requirements.txt /
-RUN /opt/python3-ven/pip3 install -r requirements.txt
+RUN /opt/python3-ven/bin/pip3 install -r requirements.txt
 
 COPY *.py /
 COPY weather /weather
@@ -17,4 +17,4 @@ COPY templates /templates
 ENV GPS_COORDINATES=40.6976684,-74.2605725
 ENV BIND_PORT=8080
 
-CMD /opt/python3-ven/python3 /server.py
+CMD /opt/python3-ven/bin/python3 /server.py
