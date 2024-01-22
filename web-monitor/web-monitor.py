@@ -259,7 +259,7 @@ class TestSSL_sh:
       jsonfile = f"/tmp/{random.randint(1, 1000000)}.json"
       args = f"{TestSSL_sh._local_scanner} " \
              f"--openssl={TestSSL_sh._openssl_scanner} --fast --ip one " \
-             f"--quiet --overwrite --jsonfile-pretty {jsonfile} " \
+             f"--quiet --jsonfile-pretty {jsonfile} " \
              f"{url}"
       TestSSL_sh.__exec_cmd(args)
       cmd_json_out = {}
