@@ -1,13 +1,17 @@
-FROM gadget1999/rpi-python3:latest
+FROM python:slim
 
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Web Monitor"
 
-RUN python3 -m venv /opt/python3-ven
+RUN \
+ apt-get update \
+ && apt-get install --no-install-recommends --assume-yes \
+  testssl.sh \
+ && python3 -m venv /opt/python3-ven
 
 COPY requirements.txt /
 RUN /opt/python3-ven/bin/pip3 install -r requirements.txt
 
 COPY *.py /
 
-CMD /opt/python3-ven/bin/python3 /web-monitor.py /config/web-monitor.cfg
+CMD /opt/python3-ven/bin/python3 /web-monitor.py /config/web-monitor.conf
