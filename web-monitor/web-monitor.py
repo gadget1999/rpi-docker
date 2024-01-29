@@ -970,7 +970,7 @@ class WebMonitor:
 class WebMonitorTestCase(unittest.TestCase):
   def test_webmonitor_report(self):
     urls = ['https://www.google.com', 'https://www.google1.com']
-    report, has_down = WebMonitor.get_report(urls, True)
+    report, has_down = WebMonitor._get_report(urls, True)
     self.assertEqual(len(report), 2, 'wrong number of records')
     WebMonitor.generate_xlsx_report(report, '/tmp/000.xlsx')
     html = WebMonitor.generate_html_body(report, '/tmp/000.html')
