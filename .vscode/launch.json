@@ -18,6 +18,19 @@
               "GPS_COORDINATES": "40.69,-74.26"
             },
             "type": "python"            
+        },
+        {
+          "name": "Python: WebMonitor",
+          "request": "launch",
+          "program": "${file}",
+          "args": [
+            "${relativeFileDirname}/web-monitor/web-monitor.cfg"
+          ],
+          "env": {
+            "SENDGRID_API_KEY": "INVALID_KEY_PLACE_HOLDER"
+          },
+          "console": "integratedTerminal",
+          "type": "python"
         }
     ]
 }
