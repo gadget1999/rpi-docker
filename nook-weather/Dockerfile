@@ -3,8 +3,6 @@ FROM gadget1999/rpi-python3:latest
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Weather station for Nook Simple Touch"
 
-RUN python3 -m venv /opt/python3-ven
-
 COPY requirements.txt /
 RUN /opt/python3-ven/bin/pip3 install -r requirements.txt
 
