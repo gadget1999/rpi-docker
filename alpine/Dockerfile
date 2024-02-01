@@ -1,8 +1,8 @@
 ARG TARGET_PLATFORM
-FROM ${TARGET_PLATFORM}/alpine
+FROM alpine:latest
 
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
-LABEL Description="Base Alpine Linux image for Raspberry Pi"
+LABEL Description="Base Multi-Arch Alpine Linux image for Raspberry Pi"
 
 ARG TIMEZONE=America/New_York
 
