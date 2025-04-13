@@ -427,7 +427,7 @@ class SiteInfo:
       t_stop = time.perf_counter_ns()
       t_elapsed_ms = int((t_stop - t_start) / 1000000)
       status.response_time = t_elapsed_ms
-      if r.status_code < 400:
+      if (r.status_code < 400) or (r.status_code == 401):
         logger.debug(f"Online (status={r.status_code}, time={t_elapsed_ms}ms)")
         if (t_elapsed_ms > 10000):
           logger.error(f"{url} response time too long: {t_elapsed_ms}ms")
