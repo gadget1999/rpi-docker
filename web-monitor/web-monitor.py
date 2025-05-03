@@ -33,8 +33,12 @@ from common import Logger, CLIParser
 logger = Logger.getLogger()
 Logger.disable_http_tracing()
 
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36"
+# some constants to handle special error conditions
 POSSIBLE_DNS_GLITCH = "Name or service not known"
+# some web site may block if browser is too old
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+# add header for identity
+APP_ID = "3ec1184c-03cd-4d44-b82a-0c6b14982201"
 
 def get_latest_user_agent():
   # it's OK to read global variable within a function
@@ -420,7 +424,8 @@ class SiteInfo:
       t_start = time.perf_counter_ns()
       headers = {
         "Accept-Language": "en-US,en;q=0.5",
-        "User-Agent": USER_AGENT
+        "User-Agent": USER_AGENT,
+        "App-Id": APP_ID
       }
       r = requests.get(url, headers=headers, timeout=120)
       r.close()
