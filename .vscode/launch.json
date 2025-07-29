@@ -27,7 +27,7 @@
             "${relativeFileDirname}/web-monitor/web-monitor.cfg"
           ],
           "env": {
-            "BREVO_API_KEY": "Add-Your-Key"
+            "EMAIL_API_KEY": "Add-Your-Key"
           },
           "console": "integratedTerminal",
           "type": "python"

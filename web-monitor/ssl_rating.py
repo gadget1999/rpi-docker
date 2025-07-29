@@ -37,12 +37,12 @@ import ssl
 from dataclasses import dataclass
 from urllib.parse import urlparse
 import requests
+import web_util
 from common import Logger
 
 logger = Logger.getLogger()
 
 # Global variables from main module
-USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
 POSSIBLE_DNS_GLITCH = "Name or service not known"
 
 @dataclass
@@ -67,7 +67,7 @@ class SSLLabs:
     # force 2 seconds sleep to avoid hitting 529 (newAssessmentCoolOff)
     time.sleep(2)
     headers = {
-      "User-Agent": USER_AGENT
+      "User-Agent": web_util.get_user_agent()
     }
     r = requests.get(analyze_endpoint, params=params, headers=headers)
     if r.status_code == 429 or r.status_code == 529:
@@ -83,7 +83,7 @@ class SSLLabs:
       # force 2 seconds sleep to avoid hitting 529 (newAssessmentCoolOff)
       time.sleep(2)
       headers = {
-        "User-Agent": USER_AGENT
+        "User-Agent": web_util.get_user_agent()
       }
       r = requests.get(info_endpoint, headers=headers)
       if r.status_code > 400:
@@ -137,7 +137,7 @@ class SSLLabs:
       report_url = f"https://www.ssllabs.com/ssltest/analyze.html?d={parsed_uri.hostname}&hideResults=on"
       for endpoint in endpoints:
         rating = SSLRecord(url=url, report=report_url, ip=endpoint['ipAddress'])
-        if is_ipv6(rating.ip):
+        if web_util.is_ipv6(rating.ip):
           # skip non IPv4 address as Azure VM doesn't support it well yet
           continue
         if endpoint['statusMessage'].lower() != 'ready':
@@ -301,16 +301,6 @@ class SSLReport:
       results.append(result)
     return results
 
-# Utility functions
-def is_ipv6(ip):
-  """Check if IP address is IPv6"""
-  try:
-    import ipaddress
-    ipaddress.IPv6Address(ip)
-    return True
-  except:
-    return False
-
 def create_ssl_config(config_dict):
   """Create SSL scanner configuration from dictionary"""
   settings = SSLScannerConfig()
@@ -321,32 +311,7 @@ def create_ssl_config(config_dict):
     settings.local_scanner = config_dict.get("local_scanner", "").strip('\" ')
     settings.openssl_path = config_dict.get("openssl_path", "").strip('\" ')
     settings.show_progress = config_dict.get("show_progress", False)
+    if not settings.local_scanner or not os.path.isfile(settings.local_scanner):
+      raise Exception(f"Invalid local scanner path: {settings.local_scanner}")
   
   return settings
-
-def load_ssl_config_from_dict(config_dict):
-  """Load SSL scanner configuration from dictionary in memory"""
-  try:
-    return create_ssl_config(config_dict)
-  except Exception as e:
-    logger.error(f"SSL scanner configuration is invalid: {e}")
-    raise
-
-def load_sslscanner_config(sslscannerconfig):
-  """Load SSL scanner configuration from config parser section (backward compatibility)"""
-  try:
-    # Convert ConfigParser section to dictionary format
-    config_dict = {
-      "generate_rating": sslscannerconfig.getboolean("GenerateSSLRating", fallback=False),
-      "use_ssllabs": sslscannerconfig.getboolean("UseSSLLabs", fallback=False)
-    }
-    
-    if not config_dict["use_ssllabs"]:
-      config_dict["local_scanner"] = sslscannerconfig.get("LocalScanner", "").strip('\" ')
-      config_dict["openssl_path"] = sslscannerconfig.get("OpenSSLPath", "").strip('\" ')
-      config_dict["show_progress"] = sslscannerconfig.getboolean("ShowProgress", fallback=False)
-    
-    return create_ssl_config(config_dict)
-  except Exception as e:
-    logger.error(f"SSLScanner configuration is invalid: {e}")
-    raise

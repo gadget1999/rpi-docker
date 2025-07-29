@@ -18,7 +18,7 @@ import openpyxl.styles # Excel formatting
 import io
 import influxdb # InfluxDB history
 # for email
-import email_client
+import email_util
 # for SSL rating
 import ssl_rating
 # for web utilities
@@ -268,8 +268,7 @@ class WebMonitor:
       if section not in config:
         return None
         
-      section_config = config[section]
-      
+      section_config = config[section]      
       # Convert config file section to dictionary for the new API
       config_dict = {
         "provider": section_config.get("EmailProvider", "brevo"),
@@ -287,8 +286,7 @@ class WebMonitor:
       config_dict["body_template"] = template_file
       
       # Use the new dictionary-based loader
-      return email_client.load_email_config_from_dict(config_dict)
-      
+      return email_util.load_email_config(config_dict)      
     except Exception as e:
       logger.error(f"Email configuration is invalid: {e}")
       raise
@@ -320,7 +318,22 @@ class WebMonitor:
       raise
 
   def _load_sslscanner_config(self, sslscannerconfig):
-    return ssl_rating.load_sslscanner_config(sslscannerconfig)
+    try:
+      # Convert ConfigParser section to dictionary format
+      config_dict = {
+        "generate_rating": sslscannerconfig.getboolean("GenerateSSLRating", fallback=False),
+        "use_ssllabs": sslscannerconfig.getboolean("UseSSLLabs", fallback=False)
+      }
+    
+      if not config_dict["use_ssllabs"]:
+        config_dict["local_scanner"] = sslscannerconfig.get("LocalScanner", "").strip('\" ')
+        config_dict["openssl_path"] = sslscannerconfig.get("OpenSSLPath", "").strip('\" ')
+        config_dict["show_progress"] = sslscannerconfig.getboolean("ShowProgress", fallback=False)
+
+      return ssl_rating.create_ssl_config(config_dict)
+    except Exception as e:
+      logger.error(f"SSL scanner configuration is invalid: {e}")
+      raise
 
   def _get_report(self, urls, include_ssl_rating=False):
     full_report = []
@@ -486,7 +499,7 @@ class WebMonitor:
         attachment_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
       
       # Send email using generic handler
-      email_helper = email_client.EmailHelper(self._email_settings)
+      email_helper = email_util.EmailHelper(self._email_settings)
       success = email_helper.send_email(
         subject=subject,
         html_content=html_content,

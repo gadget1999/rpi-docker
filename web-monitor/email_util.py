@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Email Client Module
+Email Util Module
 Multi-provider email handling with support for SendGrid and Brevo
 
 This module provides a flexible email client that supports multiple email service providers
@@ -15,7 +15,7 @@ Usage Examples:
     "sender": "sender@example.com",
     "recipients": "recipient@example.com"
   }
-  config = load_email_config_from_dict(config_dict)
+  config = load_email_config(config_dict)
   handler = EmailHelper(config)
   
   # Create config programmatically
@@ -37,12 +37,11 @@ Usage Examples:
 """
 
 import os
-import time
 import base64
 from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from enum import Enum
-from typing import Optional, List
+from typing import Optional
 from common import Logger
 
 logger = Logger.getLogger()
@@ -134,7 +133,6 @@ class SendGridProvider(EmailProviderBase):
       else:
         logger.info(f"SendGrid: Email sent successfully to {len(recipients)} recipients.")
         return True
-        
     except ImportError:
       logger.error("SendGrid library not installed. Install with: pip install sendgrid")
       return False
@@ -197,7 +195,6 @@ class BrevoProvider(EmailProviderBase):
       
       # Send email via API
       response = requests.post(url, headers=headers, json=email_data)
-      
       if response.status_code == 201:
         response_data = response.json()
         message_id = response_data.get('messageId', 'unknown')
@@ -206,7 +203,6 @@ class BrevoProvider(EmailProviderBase):
       else:
         logger.error(f"Brevo API error: {response.status_code} - {response.text}")
         return False
-      
     except ImportError as e1:
       logger.error(f"Required library not available. Make sure 'requests' is installed: pip install requests. {e1}")
       return False
@@ -271,11 +267,10 @@ def create_email_config(provider: str, api_key: str, sender: str, recipients: st
     "subject": subject,
     "body_template": body_template,
     "attachment": include_attachment
-  }
-  
-  return load_email_config_from_dict(config_dict)
+  }  
+  return load_email_config(config_dict)
 
-def load_email_config_from_dict(config_dict: dict) -> EmailConfig:
+def load_email_config(config_dict: dict) -> EmailConfig:
   """Load email configuration from dictionary
   
   Args:
@@ -312,8 +307,7 @@ def load_email_config_from_dict(config_dict: dict) -> EmailConfig:
       api_key_env = 'EMAIL_API_KEY'  # Fallback
       if api_key_env not in os.environ:
         raise ValueError(f"API key not provided in config and {api_key_env} environment variable not set")
-      api_key = os.environ[api_key_env]
-    
+      api_key = os.environ[api_key_env]    
     settings.api_key = api_key.strip() if api_key else None
     
     # Load required email settings
@@ -339,8 +333,7 @@ def load_email_config_from_dict(config_dict: dict) -> EmailConfig:
       settings.include_attachment = settings.include_attachment.lower() in ('true', '1', 'yes', 'on')
     
     logger.debug(f"Email configuration loaded for provider: {settings.provider.value}")
-    return settings
-    
+    return settings    
   except Exception as e:
     logger.error(f"Email configuration is invalid: {e}")
     raise
