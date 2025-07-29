@@ -27,7 +27,7 @@
             "${relativeFileDirname}/web-monitor/web-monitor.cfg"
           ],
           "env": {
-            "SENDGRID_API_KEY": "INVALID_KEY_PLACE_HOLDER"
+            "BREVO_API_KEY": "Add-Your-Key"
           },
           "console": "integratedTerminal",
           "type": "python"

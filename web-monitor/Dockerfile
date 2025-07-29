@@ -1,6 +1,5 @@
-FROM python:slim
+FROM python:3-alpine
 
-LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Web Monitor"
 
 RUN \
