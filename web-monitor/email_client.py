@@ -308,14 +308,8 @@ def load_email_config_from_dict(config_dict: dict) -> EmailConfig:
     # Get API key - first try from dict, then from environment variable
     api_key = config_dict.get("api_key")
     if not api_key:
-      # Get API key from environment variable based on provider
-      if settings.provider == EmailProvider.SENDGRID:
-        api_key_env = 'SENDGRID_API_KEY'
-      elif settings.provider == EmailProvider.BREVO:
-        api_key_env = 'BREVO_API_KEY'
-      else:
-        api_key_env = 'EMAIL_API_KEY'  # Fallback
-      
+      # Use generic API key name
+      api_key_env = 'EMAIL_API_KEY'  # Fallback
       if api_key_env not in os.environ:
         raise ValueError(f"API key not provided in config and {api_key_env} environment variable not set")
       api_key = os.environ[api_key_env]
