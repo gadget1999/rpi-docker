@@ -338,7 +338,7 @@ def load_email_config_from_dict(config_dict: dict) -> EmailConfig:
     if isinstance(settings.include_attachment, str):
       settings.include_attachment = settings.include_attachment.lower() in ('true', '1', 'yes', 'on')
     
-    logger.info(f"Email configuration loaded for provider: {settings.provider.value}")
+    logger.debug(f"Email configuration loaded for provider: {settings.provider.value}")
     return settings
     
   except Exception as e:
