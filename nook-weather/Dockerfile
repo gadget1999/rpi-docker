@@ -15,4 +15,4 @@ COPY templates /templates
 ENV GPS_COORDINATES=40.6976684,-74.2605725
 ENV BIND_PORT=8080
 
-CMD /opt/python3-ven/bin/python3 /server.py
+CMD ["/opt/python3-ven/bin/python3", "/server.py"]
