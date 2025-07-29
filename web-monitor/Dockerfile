@@ -3,7 +3,6 @@ FROM python:3-slim
 LABEL Description="Web Monitor"
 
 RUN \
- apk --no-cache add
  apt-get update \
  && apt-get install --no-install-recommends --assume-yes \
   testssl.sh \
