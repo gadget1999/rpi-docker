@@ -3,12 +3,10 @@ FROM python:3-alpine
 LABEL Description="Web Monitor"
 
 RUN \
- apk add --no-cache curl unzip \
+ apk add --no-cache curl unzip jq \
  && python3 -m venv /opt/python3-ven \
  && curl -sSL https://api.github.com/repos/drwetter/testssl.sh/releases/latest \
-   | grep browser_download_url \
-   | grep 'testssl.sh-.*.zip' \
-   | cut -d '"' -f 4 \
+   | jq -r '.assets[] | select(.name | test("testssl.sh-.*.zip")) | .browser_download_url' \
    | xargs curl -L -o /tmp/testssl.zip \
  && unzip /tmp/testssl.zip -d /opt/ \
  && mv /opt/testssl.sh-* /opt/testssl.sh \
