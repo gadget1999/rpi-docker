@@ -9,7 +9,7 @@ RUN \
    | jq -r '.zipball_url' \
    | xargs curl -L -o /tmp/testssl.zip \
  && unzip /tmp/testssl.zip -d /opt/ \
- && mv /opt/testssl.sh-* /opt/testssl.sh \
+ && mv /opt/testssl-testssl.sh-* /opt/testssl.sh \
  && chmod +x /opt/testssl.sh/testssl.sh \
  && rm /tmp/testssl.zip
 
