@@ -3,7 +3,7 @@ FROM python:3-alpine
 LABEL Description="Web Monitor"
 
 RUN \
- apk add --no-cache curl unzip jq \
+ apk add --no-cache curl unzip jq bash coreutils procps \
  && python3 -m venv /opt/python3-ven \
  && curl -sSL https://api.github.com/repos/drwetter/testssl.sh/releases/latest \
    | jq -r '.zipball_url' \
