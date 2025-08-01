@@ -5,7 +5,9 @@ from dataclasses import dataclass
 from abc import ABC, abstractmethod
 from enum import Enum
 from typing import Optional
-from common import Logger
+from common import Logger, CLIParser
+import sys
+import os
 
 logger = Logger.getLogger()
 
@@ -189,3 +191,49 @@ def get_email_provider(provider_name: str, api_key: str) -> EmailProviderBase:
     return GmailProvider(api_key)
   else:
     raise ValueError(f"Unsupported email provider: {provider_name}")
+
+def send_email_cli(args):
+  provider = args.provider
+  api_key = os.environ["EMAIL_API_KEY"]
+  sender = args.sender
+  recipients = args.to
+  subject = args.subject
+  body = args.body
+  attachment = args.attachment if hasattr(args, 'attachment') else None
+  attachment_type = args.attachment_type if hasattr(args, 'attachment_type') else None
+
+  attachment_data = None
+  attachment_filename = None
+  if attachment:
+    if not os.path.isfile(attachment):
+      logger.error(f"Attachment file not found: {attachment}")
+      sys.exit(2)
+    with open(attachment, 'rb') as f:
+      attachment_data = f.read()
+    attachment_filename = os.path.basename(attachment)
+
+  provider_obj = get_email_provider(provider, api_key)
+  provider_obj.send_email(
+    sender=sender,
+    recipients=recipients,
+    subject=subject,
+    html_content=body,
+    attachment_data=attachment_data,
+    attachment_filename=attachment_filename,
+    attachment_type=attachment_type
+  )
+
+if __name__ == "__main__":
+  CLI_config = {
+    'arguments': [
+      { 'name': '--provider', 'help': 'Email provider (sendgrid, brevo, gmail)', 'required': True },
+      { 'name': '--sender', 'help': 'Sender email address', 'required': True },
+      { 'name': '--to', 'help': 'Recipient email(s), separated by semicolon', 'required': True },
+      { 'name': '--subject', 'help': 'Email subject', 'required': True },
+      { 'name': '--body', 'help': 'Email body (HTML allowed)', },
+      { 'name': '--attachment', 'help': 'Path to attachment file (optional)', 'action': 'store', },
+      { 'name': '--attachment-type', 'help': 'Attachment MIME type (optional)', 'action': 'store', },
+    ],
+    'func': send_email_cli
+  }
+  CLIParser.run(CLI_config)

@@ -30,7 +30,7 @@ class Logger:
         app_name = CLIParser.get_app_name()
       app_logfile = f"/tmp/{app_name}.log"
       try:
-        fileHandler = logging.FileHandler(app_logfile, encoding = "UTF-8", delay=True)
+        fileHandler = logging.FileHandler(app_logfile, encoding = "UTF-8", delay = True)
         file_log_format = "%(asctime)s: %(levelname)s - %(message)s"
         fileHandler.setFormatter(logging.Formatter(file_log_format))
         fileHandler.setLevel(logging.INFO)
@@ -60,6 +60,11 @@ class ExitSignal:
 
 import argparse
 import os, sys
+def non_empty_string(value):
+  if not value.strip():
+    raise argparse.ArgumentTypeError("Value cannot be empty!")
+  return value
+
 class CLIParser:  
   def get_app_name():
     script = sys.argv[0]
@@ -93,7 +98,11 @@ class CLIParser:
   def __get_arg_parser(parser, config):
     arguments = config['arguments']
     for arg in arguments:
-      parser.add_argument(arg['name'], help=arg['help'], action=arg.get('action'))
+      if 'required' in arg and arg['required']:
+        parser.add_argument(arg['name'], help=arg['help'], action=arg.get('action'),
+                            required=True, type=non_empty_string)
+      else:
+        parser.add_argument(arg['name'], help=arg['help'], action=arg.get('action'))
     parser.set_defaults(func=config['func'])
     return parser
 
