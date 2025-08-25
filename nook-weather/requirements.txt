@@ -3,3 +3,6 @@ Flask
 waitress
 paste
 geopy
+pycairo
+cairosvg
+Pillow

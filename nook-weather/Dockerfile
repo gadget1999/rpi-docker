@@ -4,7 +4,12 @@ LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Weather station for Nook Simple Touch"
 
 COPY requirements.txt /
-RUN /opt/python3-ven/bin/pip3 install -r requirements.txt
+RUN apk add --no-cache \
+      cairo pango gdk-pixbuf ttf-dejavu && \
+    apk add --no-cache --virtual .build-deps \
+      build-base cairo-dev musl-dev python3-dev libffi-dev && \
+    /opt/python3-ven/bin/pip3 install -r requirements.txt && \
+    apk del .build-deps
 
 COPY *.py /
 COPY weather /weather

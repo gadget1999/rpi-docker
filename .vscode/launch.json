@@ -15,9 +15,10 @@
             "env": {
               "WEATHER_API_PROVIDER_1":"NWS",
               "WEATHER_API_KEY_1":"nook-weather",
-              "GPS_COORDINATES": "40.69,-74.26"
+              "GPS_COORDINATES": "40.69,-74.26",
+              "PATH": "C:\\msys64\\mingw64\\bin;${env:PATH}",
             },
-            "type": "python"            
+            "type": "python"
         },
         {
           "name": "Python: WebMonitor",

@@ -2,6 +2,7 @@
 
 import os
 import time
+import base64
 
 from flask import Flask, request
 from flask import render_template
@@ -58,7 +59,15 @@ def init_logger():
   wsgi_logger = logging.getLogger('wsgi')
   access_logfile = f"/tmp/{AppName}-access.log"
   wsgi_logger.addHandler(logging.FileHandler(access_logfile))
-  wsgi_logger.setLevel(logging.DEBUG)
+  wsgi_logger.setLevel(logging.INFO)
+
+def get_base64_icon(icon_name, icon_ext, static_dir):
+  icon_path = os.path.join(static_dir, f"{icon_name}.{icon_ext}")
+  try:
+    with open(icon_path, "rb") as img_file:
+      return "data:image/png;base64," + base64.b64encode(img_file.read()).decode()
+  except Exception:
+    return ""
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 @app.route('/forecast', strict_slashes=False)
@@ -80,6 +89,51 @@ def forecast():
     data = process_data(lat, lon)
     return render_template('index.html', now=data['now'], hourly=data['hourly'],
              daily=data['daily'], info=data['info'])
+  except Exception as e:
+    return f"System error: {e}"
+
+@app.route('/kindle_image', strict_slashes=False)
+def kindle_image():
+  try:
+    from flask import Response, request
+    import os
+    import io
+    from PIL import Image, ImageOps
+    import cairosvg
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    static_dir = os.path.join(base_dir, 'static', 'images')
+    # Prepare data for template
+    zip_code = None
+    gps_coordinates = None
+    if len(request.args) > 0:
+      zip_code = request.args.get('zip_code')
+      gps_coordinates = request.args.get('gps_coordinates')
+    if not gps_coordinates:
+      if zip_code:
+        gps_coordinates = WeatherUtils.get_gps_coordinates(zip_code)
+      if not gps_coordinates:
+        gps_coordinates = os.environ['GPS_COORDINATES']
+    gps = gps_coordinates.split(",")
+    lat = gps[0]
+    lon = gps[1]
+    data = process_data(lat, lon)
+    # Embed icons as base64 data URIs
+    data['now']['icon_data'] = get_base64_icon(data['now']['icon'], data['info']['icon_ext'], static_dir)
+    for item in data['hourly']:
+      item['icon_data'] = get_base64_icon(item['icon'], data['info']['icon_ext'], static_dir)
+    for item in data['daily']:
+      item['icon_data'] = get_base64_icon(item['icon'], data['info']['icon_ext'], static_dir)
+    svg = render_template('kindle.svg', now=data['now'], hourly=data['hourly'],
+             daily=data['daily'], info=data['info'])
+    # Convert SVG to PNG (600x800) grayscale
+    png_bytes = cairosvg.svg2png(bytestring=svg.encode('utf-8'), output_width=600, output_height=800, background_color='white')
+    image = Image.open(io.BytesIO(png_bytes)).convert('L')
+    # Ensure white background (in case of transparency)
+    image = ImageOps.invert(ImageOps.invert(image).convert('L'))
+    output = io.BytesIO()
+    image.save(output, format='PNG')
+    output.seek(0)
+    return Response(output.read(), mimetype='image/png')
   except Exception as e:
     return f"System error: {e}"
 

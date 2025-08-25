@@ -1,0 +1,51 @@
+<svg width="600" height="800" viewBox="0 0 600 800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Calendar (weekday and day) -->
+  <rect x="30" y="30" width="90" height="90" fill="white" stroke="black" stroke-width="2" />
+  <rect x="30" y="30" width="90" height="28" fill="black" />
+  <text x="75" y="52" text-anchor="middle" fill="white" font-size="24" font-weight="bold" font-family="sans-serif">{{ info.day }}</text>
+  <text x="75" y="110" text-anchor="middle" fill="black" font-size="56" font-weight="bold" font-family="sans-serif">{{ info.date }}</text>
+
+  <!-- Current weather icon -->
+  <image x="140" y="30" width="100" height="100" href="{{ now.icon_data }}" />
+
+  <!-- Temperature -->
+  <text x="260" y="90" font-size="40" font-weight="bold" font-family="sans-serif">{{ now.temp }}°</text>
+  <!-- High/Low stacked vertically to the right -->
+  <text x="340" y="80" font-size="24" font-weight="bold" font-family="sans-serif">H: {{ now.high }}°</text>
+  <text x="340" y="110" font-size="24" font-weight="bold" font-family="sans-serif">L: {{ now.low }}°</text>
+
+  <!-- Current summary with improved visibility and wrapping using tspans, moved up -->
+  <text x="40" y="155" font-size="15" font-weight="bold" font-family="sans-serif" style="width:520px;">
+    {% set summary = now.summary %}
+    {% set max_chars = 60 %}
+    {% for i in range(0, summary|length, max_chars) %}
+      <tspan x="40" dy="{{ 1.2 if i == 0 else 1.2 }}em">{{ summary[i:i+max_chars] }}</tspan>
+    {% endfor %}
+  </text>
+
+  <!-- Hourly forecast (horizontal, moved further down) -->
+  <g id="hourly">
+    {% for item in hourly %}
+    <g>
+      <text x="{{ 40 + loop.index0 * 70 }}" y="250" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.time }}</text>
+      <image x="{{ 25 + loop.index0 * 70 }}" y="260" width="32" height="32" href="{{ item.icon_data }}" />
+      <text x="{{ 40 + loop.index0 * 70 }}" y="310" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.temp }}°</text>
+    </g>
+    {% endfor %}
+  </g>
+
+  <!-- Daily forecast (horizontal, with date info, moved further down) -->
+  <g id="daily">
+    {% for item in daily %}
+    <g>
+      <text x="{{ 40 + loop.index0 * 90 }}" y="380" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.day }}</text>
+      <text x="{{ 40 + loop.index0 * 90 }}" y="405" font-size="22" font-family="sans-serif" text-anchor="middle">{{ item.date }}</text>
+      <image x="{{ 25 + loop.index0 * 90 }}" y="420" width="32" height="32" href="{{ item.icon_data }}" />
+      <text x="{{ 40 + loop.index0 * 90 }}" y="500" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.high }}°/{{ item.low }}°</text>
+    </g>
+    {% endfor %}
+  </g>
+
+  <!-- Footer moved further down -->
+  <text x="300" y="540" font-size="16" font-family="monospace" text-anchor="middle">{{ now.api_provider }} | {{ info.location }} | {{ info.report_time }} (fetched @ {{ info.fetch_time }})</text>
+</svg>
