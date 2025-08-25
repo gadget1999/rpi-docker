@@ -89,7 +89,7 @@ def kindle():
     import imgkit
     from flask import Response, request
     url = f"{request.scheme}://{request.host}/forecast"
-    options = {'format': 'png', 'width': 600, 'height': 800, 'encoding': "UTF-8", 'grayscale': ''}
+    options = {'format': 'png', 'width': 600, 'height': 800, 'encoding': "UTF-8"}
     #config = imgkit.config(wkhtmltoimage="/tmp/bin/wkhtmltoimage.exe")
     img = imgkit.from_url(url, False, options=options)
     return Response(img, mimetype='image/png')
