@@ -6,7 +6,7 @@ LABEL Description="Weather station for Kindle"
 
 COPY requirements.txt /
 
-RUN apt-get -y update && apt-get -y install \
+RUN apt-get -y update && apt-get install -y --no-install-recommends \
     python3 python3-pip python3-venv wkhtmltopdf fonts-arphic-ukai && \
     python3 -m venv /opt/python3-ven && \
     /opt/python3-ven/bin/pip3 install --upgrade pip && \
