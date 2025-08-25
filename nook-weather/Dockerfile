@@ -1,18 +1,10 @@
-ARG TARGET_PLATFORM
-FROM debian:bookworm-slim
+FROM gadget1999/rpi-python3:latest
 
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
-LABEL Description="Weather station for Kindle"
+LABEL Description="Weather station for Nook Simple Touch"
 
 COPY requirements.txt /
-
-RUN apt-get -y update && apt-get install -y --no-install-recommends \
-    python3 python3-pip python3-venv wkhtmltopdf fonts-arphic-ukai && \
-    python3 -m venv /opt/python3-ven && \
-    /opt/python3-ven/bin/pip3 install --upgrade pip && \
-    /opt/python3-ven/bin/pip3 install -r requirements.txt && \
-    apt-get clean && \  
-    rm -rf /tmp/* /var/tmp/* /var/cache/apk/*
+RUN /opt/python3-ven/bin/pip3 install -r requirements.txt
 
 COPY *.py /
 COPY weather /weather

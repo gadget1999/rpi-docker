@@ -3,4 +3,3 @@ Flask
 waitress
 paste
 geopy
-imgkit

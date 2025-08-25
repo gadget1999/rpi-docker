@@ -83,22 +83,6 @@ def forecast():
   except Exception as e:
     return f"System error: {e}"
 
-@app.route('/kindle', strict_slashes=False)
-def kindle():
-  try:
-    import imgkit
-    from flask import Response, request
-    url = f"{request.scheme}://{request.host}/forecast"
-    options = {'format': 'png', 'width': 600, 'height': 800, 'encoding': "UTF-8", 'disable-smart-width': ''}
-    if os.name == 'posix':
-      img = imgkit.from_url(url, False, options=options)
-    else:
-      config = imgkit.config(wkhtmltoimage="/tmp/bin/wkhtmltoimage.exe")
-      img = imgkit.from_url(url, False, options=options, config=config)
-    return Response(img, mimetype='image/png')
-  except Exception as e:
-    return f"System error: {e}"
-
 init_logger()
 WeatherForecast.init_from_env()
 if __name__ == '__main__':
