@@ -11,8 +11,8 @@
   <text x="400" y="85" font-size="35" font-weight="bold" font-family="sans-serif">{{ now.high }}° H</text>
   <text x="400" y="120" font-size="35" font-weight="bold" font-family="sans-serif">{{ now.low }}° L</text>
 
-  <!-- Conditions summary (centered, bold 15px like #conditions #detail) -->
-  <text x="300" y="175" font-size="15" font-weight="bold" font-family="sans-serif" text-anchor="middle">
+  <!-- Conditions summary (centered, bold slightly larger) -->
+  <text x="300" y="175" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">
     {% set summary = now.summary %}
     {% set max_chars = 60 %}
     {% for i in range(0, summary|length, max_chars) %}
@@ -35,10 +35,28 @@
     {% endfor %}
   </g>
 
-  <!-- Quote (font-size 32px, KaiTi, bold) -->
-  <text x="300" y="410" font-size="32" font-weight="bold" font-family="KaiTi, serif" text-anchor="middle">
-    {% for line in info.quote %}
-      <tspan x="300" dy="1.2em">{{ line }}</tspan>
+  <!-- Quote (word-wrapped to avoid splitting words) -->
+  <text x="300" y="400" font-size="24" font-weight="bold" font-family="KaiTi, serif" text-anchor="middle">
+    {% set qmax = 38 %}
+    {% set first_global = namespace(value=true) %}
+    {% for raw in info.quote %}
+      {% set words = raw.split() %}
+      {% set ns = namespace(line='') %}
+      {% for w in words %}
+        {% if ns.line == '' %}
+          {% set ns.line = w %}
+        {% elif (ns.line|length + 1 + w|length) <= qmax %}
+          {% set ns.line = ns.line ~ ' ' ~ w %}
+        {% else %}
+          <tspan x="300" dy="1.2em">{{ ns.line }}</tspan>
+          {% set ns.line = w %}
+          {% set first_global.value = false %}
+        {% endif %}
+      {% endfor %}
+      {% if ns.line %}
+        <tspan x="300" dy="1.2em">{{ ns.line }}</tspan>
+        {% set first_global.value = false %}
+      {% endif %}
     {% endfor %}
   </text>
 
