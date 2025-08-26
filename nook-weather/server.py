@@ -24,7 +24,18 @@ def get_quote():
   except Exception as e:
     return [f"Failed to get quote: {e}"]
 
-def process_data(lat, lon):
+
+# Helper to get weather data from request (handles zip/gps and process_data)
+def get_weather_data_from_request(req):
+  zip_code = req.args.get('zip_code') if len(req.args) > 0 else None
+  gps_coordinates = req.args.get('gps_coordinates') if len(req.args) > 0 else None
+  if not gps_coordinates:
+    if zip_code:
+      gps_coordinates = WeatherUtils.get_gps_coordinates(zip_code)
+    if not gps_coordinates:
+      gps_coordinates = os.environ['GPS_COORDINATES']
+  lat, lon = gps_coordinates.split(",")
+  # Inline process_data logic
   data = WeatherForecast.get_forecast(lat, lon)
   info = {}
   report_time = time.strptime(data['now']['time'], '%Y-%m-%d %H:%M:%S')
@@ -73,20 +84,7 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 @app.route('/forecast', strict_slashes=False)
 def forecast():
   try:
-    zip_code = None
-    gps_coordinates = None
-    if len(request.args) > 0:
-      zip_code = request.args.get('zip_code')
-      gps_coordinates = request.args.get('gps_coordinates')
-    if not gps_coordinates:
-      if zip_code:
-        gps_coordinates = WeatherUtils.get_gps_coordinates(zip_code)
-      if not gps_coordinates:
-        gps_coordinates = os.environ['GPS_COORDINATES']
-    gps = gps_coordinates.split(",")
-    lat = gps[0]
-    lon = gps[1]
-    data = process_data(lat, lon)
+    data = get_weather_data_from_request(request)
     return render_template('index.html', now=data['now'], hourly=data['hourly'],
              daily=data['daily'], info=data['info'])
   except Exception as e:
@@ -103,20 +101,7 @@ def kindle_image():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     static_dir = os.path.join(base_dir, 'static', 'images')
     # Prepare data for template
-    zip_code = None
-    gps_coordinates = None
-    if len(request.args) > 0:
-      zip_code = request.args.get('zip_code')
-      gps_coordinates = request.args.get('gps_coordinates')
-    if not gps_coordinates:
-      if zip_code:
-        gps_coordinates = WeatherUtils.get_gps_coordinates(zip_code)
-      if not gps_coordinates:
-        gps_coordinates = os.environ['GPS_COORDINATES']
-    gps = gps_coordinates.split(",")
-    lat = gps[0]
-    lon = gps[1]
-    data = process_data(lat, lon)
+    data = get_weather_data_from_request(request)
     # Embed icons as base64 data URIs
     data['now']['icon_data'] = get_base64_icon(data['now']['icon'], data['info']['icon_ext'], static_dir)
     for item in data['hourly']:

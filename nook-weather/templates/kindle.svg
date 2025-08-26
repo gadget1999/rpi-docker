@@ -6,7 +6,7 @@
   <text x="75" y="110" text-anchor="middle" fill="black" font-size="56" font-weight="bold" font-family="sans-serif">{{ info.date }}</text>
 
   <!-- Current weather icon -->
-  <image x="140" y="30" width="100" height="100" href="{{ now.icon_data }}" />
+  <image x="130" y="20" width="120" height="120" href="{{ now.icon_data }}" />
 
   <!-- Temperature -->
   <text x="260" y="90" font-size="40" font-weight="bold" font-family="sans-serif">{{ now.temp }}°</text>
@@ -14,38 +14,52 @@
   <text x="340" y="80" font-size="24" font-weight="bold" font-family="sans-serif">H: {{ now.high }}°</text>
   <text x="340" y="110" font-size="24" font-weight="bold" font-family="sans-serif">L: {{ now.low }}°</text>
 
-  <!-- Current summary with improved visibility and wrapping using tspans, moved up -->
-  <text x="40" y="155" font-size="15" font-weight="bold" font-family="sans-serif" style="width:520px;">
+  <!-- Current summary with improved visibility and wrapping using tspans, centered, font larger -->
+  <text x="300" y="155" font-size="20" font-weight="bold" font-family="sans-serif" text-anchor="middle">
     {% set summary = now.summary %}
     {% set max_chars = 60 %}
     {% for i in range(0, summary|length, max_chars) %}
-      <tspan x="40" dy="{{ 1.2 if i == 0 else 1.2 }}em">{{ summary[i:i+max_chars] }}</tspan>
+      <tspan x="300" dy="{{ 1.2 if i == 0 else 1.2 }}em">{{ summary[i:i+max_chars] }}</tspan>
     {% endfor %}
   </text>
 
-  <!-- Hourly forecast (horizontal, moved further down) -->
+  <!-- Hourly forecast (centered horizontally) -->
   <g id="hourly">
+    {% set n = hourly|length %}
+    {% set start_x = 300 - ((n-1)*70)/2 %}
     {% for item in hourly %}
     <g>
-      <text x="{{ 40 + loop.index0 * 70 }}" y="250" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.time }}</text>
-      <image x="{{ 25 + loop.index0 * 70 }}" y="260" width="32" height="32" href="{{ item.icon_data }}" />
-      <text x="{{ 40 + loop.index0 * 70 }}" y="310" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.temp }}°</text>
+      <text x="{{ start_x + loop.index0 * 70 }}" y="250" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.time }}</text>
+      <image x="{{ start_x - 13 + loop.index0 * 70 }}" y="252" width="48" height="48" href="{{ item.icon_data }}" />
+      <text x="{{ start_x + loop.index0 * 70 }}" y="310" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.temp }}°</text>
     </g>
     {% endfor %}
   </g>
+  <!-- Line between hourly and daily -->
+  <line x1="20" y1="340" x2="580" y2="340" stroke="#888" stroke-width="2" />
 
-  <!-- Daily forecast (horizontal, with date info, moved further down) -->
+  <!-- Daily forecast (centered horizontally, with date info) -->
   <g id="daily">
+    {% set n = daily|length %}
+    {% set start_x = 300 - ((n-1)*90)/2 %}
     {% for item in daily %}
     <g>
-      <text x="{{ 40 + loop.index0 * 90 }}" y="380" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.day }}</text>
-      <text x="{{ 40 + loop.index0 * 90 }}" y="405" font-size="22" font-family="sans-serif" text-anchor="middle">{{ item.date }}</text>
-      <image x="{{ 25 + loop.index0 * 90 }}" y="420" width="32" height="32" href="{{ item.icon_data }}" />
-      <text x="{{ 40 + loop.index0 * 90 }}" y="500" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.high }}°/{{ item.low }}°</text>
+      <text x="{{ start_x + loop.index0 * 90 }}" y="380" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.day }}</text>
+      <text x="{{ start_x + loop.index0 * 90 }}" y="405" font-size="22" font-family="sans-serif" text-anchor="middle">{{ item.date }}</text>
+      <image x="{{ start_x - 27 + loop.index0 * 90 }}" y="412" width="48" height="48" href="{{ item.icon_data }}" />
+      <text x="{{ start_x + loop.index0 * 90 }}" y="500" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle">{{ item.high }}°/{{ item.low }}°</text>
     </g>
     {% endfor %}
   </g>
 
   <!-- Footer moved further down -->
   <text x="300" y="540" font-size="16" font-family="monospace" text-anchor="middle">{{ now.api_provider }} | {{ info.location }} | {{ info.report_time }} (fetched @ {{ info.fetch_time }})</text>
+  <!-- Line below footer -->
+  <line x1="20" y1="555" x2="580" y2="555" stroke="#888" stroke-width="2" />
+  <!-- Quote below footer line -->
+  <text x="300" y="580" font-size="18" font-family="serif" text-anchor="middle">
+    {% for line in info.quote %}
+      <tspan x="300" dy="1.2em">{{ line }}</tspan>
+    {% endfor %}
+  </text>
 </svg>
