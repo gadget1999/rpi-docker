@@ -5,7 +5,7 @@ LABEL Description="Weather station for Nook Simple Touch"
 
 COPY requirements.txt /
 RUN apk add --no-cache \
-      cairo pango gdk-pixbuf ttf-dejavu fonts-arphic-ukai && \
+      cairo pango gdk-pixbuf ttf-dejavu font-wqy-zenhei && \
     apk add --no-cache --virtual .build-deps \
       build-base cairo-dev musl-dev python3-dev libffi-dev && \
     /opt/python3-ven/bin/pip3 install -r requirements.txt && \
