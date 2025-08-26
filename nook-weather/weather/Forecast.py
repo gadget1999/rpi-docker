@@ -7,6 +7,7 @@ from threading import RLock
 from .DarkSky import DarkSkyAPI
 from .OpenWeather import OpenWeatherAPI
 from .NWS import NWSAPIFactory
+from .Tomorrow import TomorrowAPI
 
 import logging
 logger = logging.getLogger()
@@ -34,6 +35,8 @@ class WeatherForecast:
         api_provider = DarkSkyAPI(key)
       elif name.lower() == "openweather":
         api_provider = OpenWeatherAPI(key)
+      elif name.lower() == "tomorrow":
+        api_provider = TomorrowAPI(key)
       else:
         raise Exception(f"Unknown weather API provider: {name}")
 

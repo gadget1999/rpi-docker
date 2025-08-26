@@ -14,7 +14,9 @@
             ],
             "env": {
               "WEATHER_API_PROVIDER_1":"NWS",
-              "WEATHER_API_KEY_1":"nook-weather",
+              "WEATHER_API_KEY_1":"Kindle_Weather",
+              "WEATHER_API_PROVIDER_1":"Tomorrow",
+              "WEATHER_API_KEY_1":"Your-Key-Here",
               "GPS_COORDINATES": "40.69,-74.26",
               "QUOTE_FILE": "/tmp/quotes.csv",
               "PATH": "C:\\msys64\\mingw64\\bin;${env:PATH}",
