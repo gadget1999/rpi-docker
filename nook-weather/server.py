@@ -18,9 +18,9 @@ logger = logging.getLogger()
 
 def get_quote():
   try:
-    quote_file = "/quotes/quotes.csv"
-    if 'QUOTE_FILE' in os.environ:
-      quote_file = os.environ['QUOTE_FILE']
+    quote_file = os.environ.get('QUOTE_FILE')
+    if not quote_file:
+      quote_file = "/quotes/quotes.csv"
     Quotes.init_quotes(quote_file)
     return Quotes.get_one_quote()
   except Exception as e:
