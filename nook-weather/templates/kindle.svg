@@ -2,7 +2,7 @@
   <defs>
     <!-- Clip area for quote so it cannot overlap the daily section (daily top ~560) -->
     <clipPath id="quote-clip">
-      <rect x="40" y="370" width="520" height="150" />
+      <rect x="40" y="390" width="520" height="150" />
     </clipPath>
   </defs>
   <!-- Recreated from index.html layout (600x800) -->
@@ -42,7 +42,7 @@
   </g>
 
   <!-- Quote (word-wrapped, clipped, and placed before daily to stay under it) -->
-  <text x="300" y="380" font-size="20" font-weight="bold" font-family="KaiTi, serif" text-anchor="middle" clip-path="url(#quote-clip)">
+  <text x="300" y="400" font-size="20" font-weight="bold" font-family="KaiTi, serif" text-anchor="middle" clip-path="url(#quote-clip)">
     {% set qmax = 38 %}
     {% set first_global = namespace(value=true) %}
     {% for raw in info.quote %}
