@@ -18,12 +18,13 @@ logger = logging.getLogger()
 
 def get_quote():
   try:
-    quote_file = os.environ['QUOTE_FILE']
+    quote_file = "/quotes/quotes.csv"
+    if 'QUOTE_FILE' in os.environ:
+      quote_file = os.environ['QUOTE_FILE']
     Quotes.init_quotes(quote_file)
     return Quotes.get_one_quote()
   except Exception as e:
     return [f"Failed to get quote: {e}"]
-
 
 # Helper to get weather data from request (handles zip/gps and process_data)
 def get_weather_data_from_request(req):
