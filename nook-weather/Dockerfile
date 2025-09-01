@@ -16,6 +16,7 @@ COPY weather /weather
 COPY misc /misc
 COPY static /static
 COPY templates /templates
+COPY quotes /quotes
 
 ENV GPS_COORDINATES=40.6976684,-74.2605725
 ENV BIND_PORT=8080
