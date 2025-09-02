@@ -22,12 +22,28 @@
   <text x="450" y="120" font-size="35" font-weight="bold" font-family="sans-serif">{{ now.low }}° L</text>
 
   <!-- Conditions summary (centered, bold slightly larger) -->
+  <clipPath id="summary-clip">
+    <rect x="40" y="140" width="520" height="80" />
+  </clipPath>
   <text x="300" y="160" font-size="18" font-weight="bold" font-family="sans-serif" text-anchor="middle" clip-path="url(#summary-clip)">
     {% set summary = now.summary %}
-    {% set max_chars = 45 %}
-    {% for i in range(0, summary|length, max_chars) %}
-      <tspan x="300" dy="{{ 1.2 if i == 0 else 1.2 }}em">{{ summary[i:i+max_chars] }}</tspan>
+    {% set smax = 45 %}
+    {% set ns = namespace(line='') %}
+    {% set first = namespace(value=true) %}
+    {% for w in summary.split() %}
+      {% if ns.line == '' %}
+        {% set ns.line = w %}
+      {% elif (ns.line|length + 1 + w|length) <= smax %}
+        {% set ns.line = ns.line ~ ' ' ~ w %}
+      {% else %}
+        <tspan x="300" dy="{{ '1.2em' if first.value else '1.2em' }}">{{ ns.line }}</tspan>
+        {% set ns.line = w %}
+        {% set first.value = false %}
+      {% endif %}
     {% endfor %}
+    {% if ns.line %}
+      <tspan x="300" dy="{{ '1.2em' if first.value else '1.2em' }}">{{ ns.line }}</tspan>
+    {% endif %}
   </text>
 
   <!-- Hourly forecast (width ~520 like .forecast) -->
