@@ -125,7 +125,7 @@ class NWSAPI:
 
     current_time = datetime.now(timezone.utc)
     elapsed = (current_time - report_time).total_seconds()
-    if (elapsed > 7200):
+    if (elapsed > 3600):
       raise Exception(f"API result is too old: {report_time.isoformat()}")
 
     # NWS half day series starts from current time until the 6:00/18:00 marks
