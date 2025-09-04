@@ -86,7 +86,12 @@ class NWSAPI:
     return 'NWS'
 
   def __init__(self, app_key):
-    self.__headers = {'User-Agent': app_key}
+    self.__headers = {
+      'User-Agent': app_key,
+      'Accept': 'application/geo+json',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
+      }
     # NWS does not maintain daily high/low
     self.date = None
     self.daily_high = -200
