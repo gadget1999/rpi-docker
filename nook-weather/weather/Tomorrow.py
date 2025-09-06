@@ -113,7 +113,7 @@ class TomorrowAPI:
     precipitation_chance = 0
     rain_accum = 0.0
     snow_accum = 0.0
-    for h in hourly_list[:12]:  # next 12 hours for chance
+    for h in hourly_list[:24]:  # next 24 hours
       values = h.get('values', h) or {}
       precipitation_chance = max(precipitation_chance, int(round(values.get('precipitationProbability', 0))))
       rain_accum += float(values.get('rainAccumulation', 0.0))  # in inches
