@@ -64,7 +64,7 @@ class WeatherForecast:
           if data:
             break
         except Exception as e:
-          logger.debug(f"{api_provider.name} API failed: {e}")
+          logger.error(f"{api_provider.name} API failed: {e}")
           continue
 
       if data:

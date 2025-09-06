@@ -24,7 +24,16 @@ def get_weather_data_from_request(req):
     if zip_code:
       gps_coordinates = WeatherUtils.get_gps_coordinates(zip_code)
     if not gps_coordinates:
-      gps_coordinates = os.environ['GPS_COORDINATES']
+      gps_coordinates = os.getenv('GPS_COORDINATES')
+  if not gps_coordinates:
+    raise Exception(f"""
+                    GPS coordinates cannot be found.<p>
+                    Please provide gps_coordinates or zip_code as query parameter, 
+                    or set GPS_COORDINATES environment variable when starting docker container.<p>
+                    Examples:<br>
+                    {request.scheme}://{request.host}{request.path}?gps_coordinates=39.7128,-76.0060<br>
+                    {request.scheme}://{request.host}{request.path}?zip_code=10001
+                    """)
   lat, lon = gps_coordinates.split(",")
   # Inline process_data logic
   data = WeatherForecast.get_forecast(lat, lon)

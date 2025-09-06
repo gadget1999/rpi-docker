@@ -14,8 +14,6 @@
             ],
             "env": {
               "WEATHER_API_PROVIDER_1":"Tomorrow",
-              "GPS_COORDINATES": "40.69,-74.26",
-              "QUOTE_FILE": "/tmp/quotes.csv",
             },
             "envFile": "${workspaceFolder}/.env",
             "type": "python"
