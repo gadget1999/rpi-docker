@@ -90,6 +90,7 @@ class TomorrowAPI:
     temp_app = int(round(now_values.get('temperatureApparent', temp)))
     wind_speed = int(round(now_values.get('windSpeed', 0)))
     wind_dir_deg = int(round(now_values.get('windDirection', 0)))
+    humidity = int(round(now_values.get('humidity', 0)))
 
     now = {
       'api_provider': self.name,
@@ -99,7 +100,7 @@ class TomorrowAPI:
       'low': 0,   # to be set from daily below
       'cond': cond,
       'icon': icon,
-      'summary': f"{wind_speed} mph {WeatherUtils.get_direction(wind_dir_deg)} wind, feels like {temp_app}°",
+      'summary': f"{wind_speed} mph {WeatherUtils.get_direction(wind_dir_deg)} wind, feels like {temp_app}°, humidity {humidity}%",
     }
 
     # timelines for hourly/daily

@@ -6,6 +6,10 @@
 *.pyc
 __pycache__/
 
+# Environment files
+.env
+.env.*
+
 .vs
 /nook-weather/__pycache__
 /nook-weather/weather/__pycache__
