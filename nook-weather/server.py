@@ -16,16 +16,6 @@ from weather.utils import WeatherUtils
 import logging
 logger = logging.getLogger()
 
-def get_quote():
-  try:
-    quote_file = os.environ.get('QUOTE_FILE')
-    if not quote_file:
-      quote_file = "/quotes/quotes.csv"
-    Quotes.init_quotes(quote_file)
-    return Quotes.get_one_quote()
-  except Exception as e:
-    return [f"Failed to get quote: {e}"]
-
 # Helper to get weather data from request (handles zip/gps and process_data)
 def get_weather_data_from_request(req):
   zip_code = req.args.get('zip_code') if len(req.args) > 0 else None
@@ -46,7 +36,7 @@ def get_weather_data_from_request(req):
   info['report_time'] = time.strftime('%b-%d %H:%M:%S', report_time)
   info['fetch_time'] = time.strftime('%H:%M:%S', timestamp)
   info['location'] = f"{round(float(lat))},{round(float(lon))}"
-  info['quote'] = get_quote()
+  info['quote'] = Quotes.get_one_quote()
   info['icon_path'] = '/static/images'
   info['icon_ext'] = 'png'
   data['info'] = info
