@@ -43,11 +43,11 @@ class TomorrowAPI:
   def __init__(self, app_key):
     self.__api_key = app_key
 
-  def __map_icon(self, code: int):
+  def _map_icon(self, code: int):
     default = ("Unknown", "cloudy")
     return TOMORROW_ICON_MAP.get(code, default)
 
-  def __parse_time(self, t: str):
+  def _parse_time(self, t: str):
     # Example: 2025-08-26T15:00:00Z
     try:
       if t.endswith('Z'):
@@ -57,7 +57,7 @@ class TomorrowAPI:
       # Fallback: return naive without tz
       return datetime.fromisoformat(t.replace('Z', ''))
 
-  def __api_call(self, url):
+  def _api_call(self, url):
     cache = WeatherUtils.load_api_dump(url)
     if cache:
       return cache
@@ -72,24 +72,25 @@ class TomorrowAPI:
   def forecast(self, lat, lon):
     # Fetch realtime for 'now'
     realtime_url = f"{TomorrowAPI.realtime_endpoint}?location={lat},{lon}&units=imperial&apikey={self.__api_key}"
-    realtime = self.__api_call(realtime_url)
+    realtime = self._api_call(realtime_url)
 
     # Fetch both hourly and daily forecasts
     forecast_url = f"{TomorrowAPI.forecast_endpoint}?location={lat},{lon}&timesteps=1h,1d&units=imperial&apikey={self.__api_key}"
-    fc = self.__api_call(forecast_url)
+    fc = self._api_call(forecast_url)
 
     result = {}
 
     # map now
     now_values = realtime.get('data', {}).get('values', {}) if 'data' in realtime else realtime.get('data', {})
     now_time = realtime.get('data', {}).get('time') if 'data' in realtime else realtime.get('time')
-    now_dt = self.__parse_time(now_time) if now_time else datetime.now()
+    now_dt = self._parse_time(now_time) if now_time else datetime.now()
     weather_code = int(now_values.get('weatherCode', 1001))
-    cond, icon = self.__map_icon(weather_code)
+    cond, icon = self._map_icon(weather_code)
     temp = int(round(now_values.get('temperature', 0)))
     temp_app = int(round(now_values.get('temperatureApparent', temp)))
     wind_speed = int(round(now_values.get('windSpeed', 0)))
     wind_dir_deg = int(round(now_values.get('windDirection', 0)))
+    wind_dir = WeatherUtils.get_direction(wind_dir_deg)
     humidity = int(round(now_values.get('humidity', 0)))
 
     now = {
@@ -100,13 +101,30 @@ class TomorrowAPI:
       'low': 0,   # to be set from daily below
       'cond': cond,
       'icon': icon,
-      'summary': f"{wind_speed} mph {WeatherUtils.get_direction(wind_dir_deg)} wind, feels like {temp_app}°, humidity {humidity}%",
+      'summary': f"{wind_speed} mph {wind_dir} wind, feels like {temp_app}°, humidity {humidity}%",
     }
 
     # timelines for hourly/daily
     timelines = fc.get('timelines') or {}
     hourly_list = timelines.get('hourly') or []
     daily_list = timelines.get('daily') or []
+
+    # get rain or snow chance and accumlation from hourly (add together)
+    precipitation_chance = 0
+    rain_accum = 0.0
+    snow_accum = 0.0
+    for h in hourly_list[:12]:  # next 12 hours for chance
+      values = h.get('values', h) or {}
+      precipitation_chance = max(precipitation_chance, int(round(values.get('precipitationProbability', 0))))
+      rain_accum += float(values.get('rainAccumulation', 0.0))  # in inches
+      snow_accum += float(values.get('snowAccumulation', 0.0)) # in inches
+    if rain_accum > 0.0 or snow_accum > 0.0:
+      if rain_accum > 0.0:
+        now['summary'] += f", {rain_accum:.2f}\" rain"
+      if snow_accum > 0.0:
+        now['summary'] += f", {snow_accum:.2f}\" snow"
+      if precipitation_chance > 0:
+        now['summary'] += f" ({precipitation_chance}% chance)"
 
     # Map hourly: pick indices similar to others
     hourly = []
@@ -115,10 +133,10 @@ class TomorrowAPI:
       if i < len(hourly_list):
         h = hourly_list[i]
         t = h.get('time') or h.get('startTime')
-        dt = self.__parse_time(t)
+        dt = self._parse_time(t)
         values = h.get('values', h)
         code = int(values.get('weatherCode', 1001))
-        cond_h, icon_h = self.__map_icon(code)
+        cond_h, icon_h = self._map_icon(code)
         item = {
           'time': WeatherUtils.get_am_pm_hour_str(dt),
           'temp': int(round(values.get('temperature', 0))),
@@ -133,10 +151,10 @@ class TomorrowAPI:
     for i in range(1, min(7, len(daily_list))):
       d = daily_list[i]
       t = d.get('time') or d.get('startTime')
-      dt = self.__parse_time(t)
+      dt = self._parse_time(t)
       values = d.get('values', d)
       code = int(values.get('weatherCode', 1001))
-      cond_d, icon_d = self.__map_icon(code)
+      cond_d, icon_d = self._map_icon(code)
       item = {
         'day': dt.strftime('%a'),
         'date': dt.strftime('%m/%d'),
