@@ -44,7 +44,7 @@ class TomorrowAPI:
     self.__api_key = app_key
 
   def _map_icon(self, code: int):
-    default = ("Unknown", "cloudy")
+    default = ("Unknown", "hail")
     return TOMORROW_ICON_MAP.get(code, default)
 
   def _parse_time(self, t: str):
