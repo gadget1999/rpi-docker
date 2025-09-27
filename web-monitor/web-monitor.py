@@ -76,7 +76,7 @@ class SiteInfo:
         "User-Agent": web_util.get_user_agent(),
         "App-Id": APP_ID
       }
-      r = requests.get(url, headers=headers, timeout=120)
+      r = requests.get(url, headers=headers, timeout=40)
       r.close()
       t_stop = time.perf_counter_ns()
       t_elapsed_ms = int((t_stop - t_start) / 1000000)
