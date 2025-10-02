@@ -37,6 +37,7 @@ def get_weather_data_from_request(req):
   lat, lon = gps_coordinates.split(",")
   # Inline process_data logic
   data = WeatherForecast.get_forecast(lat, lon)
+  logger.debug(f"Weather data: {data}")
   info = {}
   report_time = time.strptime(data['now']['time'], '%Y-%m-%d %H:%M:%S')
   timestamp = time.localtime()
@@ -54,7 +55,10 @@ def get_weather_data_from_request(req):
 AppName = "nook-weather"
 def init_logger():
   # Flask logging (application logs)
-  app_logfile = f"/tmp/{AppName}.log"
+  app_logfile = f"/tmp/{AppName}.log"  
+  log_level = logging.INFO
+  if 'DEBUG' in os.environ:
+    log_level = logging.DEBUG
 
   try:
     fileHandler = logging.FileHandler(app_logfile)
@@ -63,14 +67,14 @@ def init_logger():
   except Exception as e: 
     print(f"Cannot open log file: {e}")
 
-  logger.setLevel(logging.INFO)
+  logger.setLevel(log_level)
   # Disable Waitress logging
   logging.getLogger('waitress').setLevel(logging.WARN)
   # Waitress access logging (web server logs)
   wsgi_logger = logging.getLogger('wsgi')
   access_logfile = f"/tmp/{AppName}-access.log"
   wsgi_logger.addHandler(logging.FileHandler(access_logfile))
-  wsgi_logger.setLevel(logging.INFO)
+  wsgi_logger.setLevel(log_level)
 
 def get_base64_icon(icon_name, icon_ext, static_dir):
   icon_path = os.path.join(static_dir, f"{icon_name}.{icon_ext}")
@@ -84,6 +88,7 @@ app = Flask(__name__, static_folder='static', template_folder='templates')
 @app.route('/forecast', strict_slashes=False)
 def forecast():
   try:
+    logger.debug(f"Request args: {request.args}")
     data = get_weather_data_from_request(request)
     return render_template('index.html', now=data['now'], hourly=data['hourly'],
              daily=data['daily'], info=data['info'])
@@ -108,16 +113,21 @@ def kindle_image():
       item['icon_data'] = get_base64_icon(item['icon'], data['info']['icon_ext'], static_dir)
     for item in data['daily']:
       item['icon_data'] = get_base64_icon(item['icon'], data['info']['icon_ext'], static_dir)
+    logger.debug(f"Rendering SVG...")
     svg = render_template('kindle.svg', now=data['now'], hourly=data['hourly'],
              daily=data['daily'], info=data['info'])
     # Convert SVG to PNG (600x800) grayscale
-    png_bytes = cairosvg.svg2png(bytestring=svg.encode('utf-8'), output_width=600, output_height=800, background_color='white')
+    logger.debug(f"Converting SVG to PNG...")
+    png_bytes = cairosvg.svg2png(bytestring=svg.encode('utf-8'), output_width=600, output_height=800, background_color='white')    
     image = Image.open(io.BytesIO(png_bytes)).convert('L')
     # Ensure white background (in case of transparency)
+    logger.debug(f"Converting image to grayscale...")
     image = ImageOps.invert(ImageOps.invert(image).convert('L'))
     output = io.BytesIO()
+    logger.debug(f"Saving PNG to output stream...")
     image.save(output, format='PNG')
     output.seek(0)
+    logger.debug(f"Returning PNG response...")
     return Response(output.read(), mimetype='image/png')
   except Exception as e:
     return f"System error: {e}"
