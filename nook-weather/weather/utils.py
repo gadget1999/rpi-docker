@@ -38,7 +38,7 @@ class WeatherUtils:
       return timestamp.strftime('%-I %p')
 
   def load_api_dump(url):
-    if 'DEBUG' in os.environ:
+    if 'DEBUG_API' in os.environ:
       hash = binascii.crc32(url.encode('utf8'))
       debug_json = f"/tmp/{hash}.json"
       if os.path.exists(debug_json):
@@ -46,11 +46,10 @@ class WeatherUtils:
           return json.load(r)
 
   def save_api_dump(url, r):
-    if 'DEBUG' in os.environ or os.path.exists('/tmp/dump-api.flag'):
+    if 'DEBUG_API' in os.environ or os.path.exists('/tmp/dump-api.flag'):
       hash = binascii.crc32(url.encode('utf8'))
       debug_json = f"/tmp/{hash}.json"
       with open(debug_json, "w") as w:
-        w.write(f"URL: {url}\r\n")
         w.write(r.text)
 
   def get_gps_coordinates(zip_code):

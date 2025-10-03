@@ -37,7 +37,7 @@ def get_weather_data_from_request(req):
   lat, lon = gps_coordinates.split(",")
   # Inline process_data logic
   data = WeatherForecast.get_forecast(lat, lon)
-  logger.debug(f"Weather data: {data}")
+  logger.debug(f"Weather data from {data['now']['api_provider']} @ {data['now']['time']}")
   info = {}
   report_time = time.strptime(data['now']['time'], '%Y-%m-%d %H:%M:%S')
   timestamp = time.localtime()
