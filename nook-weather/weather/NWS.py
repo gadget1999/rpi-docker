@@ -219,7 +219,7 @@ class NWSAPI:
     if cache:
       return cache
 
-    r = requests.get(url, headers=self.__headers)
+    r = requests.get(url, headers=self.__headers, timeout=60)
     if r.status_code >= 400:
       raise Exception(f"REST API failed ({r.status_code}): {url}")
 

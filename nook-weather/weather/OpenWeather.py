@@ -97,7 +97,7 @@ class OpenWeatherAPI:
     if cache:
       return cache
 
-    r = requests.get(API_URL)
+    r = requests.get(API_URL, timeout=60)
     if r.status_code >= 400:
       raise Exception(f"REST API failed ({r.status_code}): {url}")
 

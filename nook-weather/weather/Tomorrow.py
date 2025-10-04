@@ -62,7 +62,7 @@ class TomorrowAPI:
     if cache:
       return cache
 
-    r = requests.get(url)
+    r = requests.get(url, timeout=60)
     if r.status_code >= 400:
       raise Exception(f"REST API failed ({r.status_code}): {url}")
 
