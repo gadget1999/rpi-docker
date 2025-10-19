@@ -86,6 +86,7 @@ log file = /tmp/samba.log
 max log size = 50
 map to guest = bad user
 #socket options = TCP_NODELAY SO_RCVBUF=8192 SO_SNDBUF=8192
+vfs objects = catia fruit streams_xattr
 local master = no
 dns proxy = no
 EOT
