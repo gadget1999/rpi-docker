@@ -3,9 +3,9 @@
     // Hover to view descriptions of existing attributes.
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
-    "configurations": [
+    "configurations": [   
         {
-            "name": "Python: Nook Weather",
+            "name": "Nook Weather",
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
@@ -20,7 +20,7 @@
             "type": "python"
         },
         {
-          "name": "Python: WebMonitor",
+          "name": "WebMonitor",
           "request": "launch",
           "program": "${file}",
           "args": [
@@ -31,6 +31,21 @@
           },
           "console": "integratedTerminal",
           "type": "python"
-        }
+        },
+        {
+            "name": "Media Tool",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": [
+              ""
+            ],
+            "env": {
+              "WEATHER_API_PROVIDER_1":"Tomorrow",
+              "DEBUG":"True",
+            },
+            "envFile": "${workspaceFolder}/.env",
+            "type": "python"
+        },
     ]
 }

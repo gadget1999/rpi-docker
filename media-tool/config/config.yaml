@@ -1,0 +1,76 @@
+# Media Tool Configuration
+source_folder: "/tmp/Import/Source"
+staging_folder: "/tmp/Import/Staging"
+log_file: "/tmp/Import/media_tool.log"
+
+# Duplicate handling strategy: 'counter' (append _1, _2) or 'skip' (skip existing)
+duplicate_strategy: "skip"
+
+# Optional: path to FFmpeg executable if not in PATH
+# ffmpeg_path: "C:/ffmpeg/bin/ffmpeg.exe"
+
+# Camera model name mapping (to shorten long names in filenames)
+camera_model_mapping:
+  "C4100Z,C4000Z": "C4100Z"
+  "Canon EOS 5D": "5D"
+  "Canon EOS 5D Mark III": "5D3"
+  "Canon EOS 5D Mark IV": "5D4"
+  "Canon EOS 7D": "7D"
+  "Canon EOS Digital Rebel XT": "350D"
+  "Canon EOS RP": "EOS-RP"
+  "Canon PowerShot S45": "S45"
+  "Canon PowerShot SX100 IS": "SX100"
+  "Canon PowerShot SX130 IS": "SX130"
+  "CanoScan LiDE 400": "LiDE4"
+  "DSC-P72": "P72"
+  "FinePix XP120 XP121 XP125": "XP120"
+  "HTC Touch Pro T7272": "TouchPro"
+  "iPad 2": "iPad2"
+  "iPhone 4S": "iP4S"
+  "iPhone 6 Plus": "iP6+"
+  "iPhone 6s": "iP6S"
+  "iPhone 13": "iP13"
+  "iPhone 13 Pro Max": "iP13Max"
+  "iPhone 16e": "iP16e"
+  "LG Electronics": "LGG4"
+  "moto g(6)": "MotoG6"
+  "moto g(7)": "MotoG7"
+  "Moto Z (2)": "Z2"
+  "MT2L03": "Mate2"
+  "NIKON D60": "D60"
+  "NIKON D200": "D200"
+  "NIKON D7000": "D7000"
+  "Pixel 2 XL": "P2XL"
+  "Pixel 3": "Pixel3"
+  "Pixel 5": "Pixel5"
+  "Sony P72": "P72"
+  "VS986": "VS986"
+  # Add more mappings as needed
+
+photo:
+  max_width: 4032
+  max_height: 4032
+  quality: 92
+  # Filename pattern: {date} = YYYYMMDD_HHMMSS, {model} = camera model, {ext} = extension
+  filename_pattern: "{date}_{model}.{ext}"
+  extensions: [".jpg", ".jpeg", ".png", ".heic", ".webp"]
+
+video:
+  target_width: 1920
+  target_height: 1080
+  max_bitrate: "8M"
+  # Filename pattern: {date} = YYYYMMDD_HHMMSS, {ext} = extension
+  filename_pattern: "{date}.{ext}"
+  extensions: [".mp4", ".mov", ".hevc", ".avi", ".mkv"]
+  
+  # Validation tolerances
+  duration_tolerance_sec: 1.0
+  bitrate_tolerance_ratio: 1.2
+  
+  # Codec preferences by file extension
+  codec_prefs:
+    ".mp4": "libx264"
+    ".mov": "libx264"
+    ".hevc": "libx265"
+    ".mkv": "libx265"
+    ".avi": "libx264"

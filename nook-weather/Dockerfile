@@ -1,7 +1,7 @@
 FROM gadget1999/rpi-python3:latest
 
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
-LABEL Description="Weather station for Nook Simple Touch"
+LABEL Description="Weather station server for e-Readers like Kindle, Kobo, Nook Simple Touch, etc."
 
 COPY requirements.txt /
 RUN apk add --no-cache \
