@@ -7,8 +7,8 @@ log_file: "/tmp/Import/media_tool.log"
 duplicate_strategy: "skip"
 
 # Optional: paths to FFmpeg/FFprobe executables if not in PATH
-# ffmpeg_path: "C:/ffmpeg/bin/ffmpeg.exe"
-# ffprobe_path: "C:/ffmpeg/bin/ffprobe.exe"
+ffmpeg_path: "D:/Dropbox/Tools/Media/ffmpeg/bin/ffmpeg.exe"
+ffprobe_path: "D:/Dropbox/Tools/Media/ffmpeg/bin/ffprobe.exe"
 
 # Camera model name mapping (to shorten long names in filenames)
 camera_model_mapping:
