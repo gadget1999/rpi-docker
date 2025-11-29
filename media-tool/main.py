@@ -3,7 +3,7 @@ import os
 import sys
 import time
 from datetime import datetime
-from pathlib import Path
+from typing import Optional
 
 from config_loader import ConfigLoader
 from logger import setup_logger, log_action
@@ -11,7 +11,7 @@ from media.base import analyze_file_type, extract_metadata
 from media.photo import Photo
 from media.video import Video, FFmpegWrapper
 from media.exceptions import MediaProcessingError
-from utils.file_ops import scan_folder_recursive, copy_file, handle_duplicates
+from utils.file_ops import scan_folder_recursive, copy_file, handle_duplicates, rename_in_place
 from utils.date_utils import (
   parse_date_from_filename, get_file_modification_time, format_date_for_filename
 )
@@ -97,6 +97,42 @@ def get_metadata_with_fallback(file_path: str, logger) -> dict:
     }
 
 
+def rename_source_file(file_path: str, new_filename: str, duplicate_strategy: str, logger) -> Optional[str]:
+  """Rename the original file in-place before processing."""
+  target_path = rename_in_place(file_path, new_filename, duplicate_strategy)
+  if target_path is None:
+    log_action(logger, {
+      'status': 'skipped',
+      'file': file_path,
+      'reason': 'rename-conflict'
+    })
+    return None
+  if os.path.abspath(target_path) != os.path.abspath(file_path):
+    log_action(logger, {
+      'status': 'info',
+      'file': file_path,
+      'message': f'Renamed source to {os.path.basename(target_path)}'
+    })
+  return target_path
+
+
+def apply_timestamp(path: str, dt: Optional[datetime], logger, context: str):
+  if not path or not dt:
+    return
+  try:
+    if dt.tzinfo is None:
+      timestamp = time.mktime(dt.timetuple()) + dt.microsecond / 1_000_000
+    else:
+      timestamp = dt.timestamp()
+    os.utime(path, (timestamp, timestamp))
+  except Exception as e:
+    log_action(logger, {
+      'status': 'warning',
+      'file': path,
+      'message': f'Failed to set timestamp ({context}): {e}'
+    })
+
+
 def process_photo(file_path: str, config: ConfigLoader, logger) -> dict:
   """Process a single photo file."""
   start_time = time.time()
@@ -133,6 +169,7 @@ def process_photo(file_path: str, config: ConfigLoader, logger) -> dict:
         dt = get_file_modification_time(file_path)
     else:
       dt = get_file_modification_time(file_path)
+    timestamp_dt = dt
     
     # Generate new filename (update pattern to use mapped model)
     ext = os.path.splitext(file_path)[1].lstrip('.')
@@ -141,6 +178,21 @@ def process_photo(file_path: str, config: ConfigLoader, logger) -> dict:
     else:
       pattern_with_model = pattern.replace('{model}', mapped_model.replace(' ', ''))
     new_filename = photo.generate_filename(pattern_with_model, ext)
+
+    renamed_path = rename_source_file(file_path, new_filename, duplicate_strategy, logger)
+    if renamed_path is None:
+      elapsed_ms = int((time.time() - start_time) * 1000)
+      log_action(logger, {
+        'status': 'skipped',
+        'type': 'photo',
+        'file': file_path,
+        'reason': 'rename-conflict',
+        'elapsed_ms': elapsed_ms
+      })
+      return {'status': 'skipped', 'reason': 'rename-conflict'}
+    file_path = renamed_path
+    photo.file_path = renamed_path
+    apply_timestamp(file_path, timestamp_dt, logger, 'source-photo')
     
     # Build staging path with YYYY/YYYY.MM structure
     year_folder = dt.strftime('%Y')
@@ -163,6 +215,7 @@ def process_photo(file_path: str, config: ConfigLoader, logger) -> dict:
     
     # Resize photo using Photo object
     photo.resize(final_path, max_width, max_height, quality)
+    apply_timestamp(final_path, timestamp_dt, logger, 'output-photo')
     
     elapsed_ms = int((time.time() - start_time) * 1000)
     log_action(logger, {
@@ -218,19 +271,35 @@ def process_video(file_path: str, config: ConfigLoader, logger) -> dict:
     creation_time_str = video.metadata.get('creation_time', '')
     if creation_time_str:
       try:
-        # Handle ISO format: 2025-10-25T14:03:23.000Z
         if 'T' in creation_time_str:
-          dt = datetime.fromisoformat(creation_time_str.replace('Z', '+00:00').split('+')[0])
+          iso_str = creation_time_str.replace('Z', '+00:00')
+          dt = datetime.fromisoformat(iso_str)
         else:
           dt = datetime.strptime(creation_time_str, '%Y:%m:%d %H:%M:%S')
       except:
         dt = get_file_modification_time(file_path)
     else:
       dt = get_file_modification_time(file_path)
+    timestamp_dt = dt
     
     # Generate new filename
     ext = os.path.splitext(file_path)[1].lstrip('.')
     new_filename = video.generate_filename(pattern, ext)
+
+    renamed_path = rename_source_file(file_path, new_filename, duplicate_strategy, logger)
+    if renamed_path is None:
+      elapsed_ms = int((time.time() - start_time) * 1000)
+      log_action(logger, {
+        'status': 'skipped',
+        'type': 'video',
+        'file': file_path,
+        'reason': 'rename-conflict',
+        'elapsed_ms': elapsed_ms
+      })
+      return {'status': 'skipped', 'reason': 'rename-conflict'}
+    file_path = renamed_path
+    video.file_path = renamed_path
+    apply_timestamp(file_path, timestamp_dt, logger, 'source-video')
     
     # Build staging path with YYYY/YYYY.MM structure
     year_folder = dt.strftime('%Y')
@@ -267,6 +336,8 @@ def process_video(file_path: str, config: ConfigLoader, logger) -> dict:
       duration_tol,
       bitrate_tol
     )
+
+    apply_timestamp(final_path, timestamp_dt, logger, 'output-video')
     
     elapsed_ms = int((time.time() - start_time) * 1000)
     operations = ['validate', 'rename', 'copy']

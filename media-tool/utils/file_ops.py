@@ -41,3 +41,19 @@ def handle_duplicates(dst_path: str, strategy: str = 'counter') -> Optional[str]
     new_path = f"{base}_{counter}{ext}"
     counter += 1
   return new_path
+
+def rename_in_place(src_path: str, new_filename: str, strategy: str = 'counter') -> Optional[str]:
+  """Rename a file within its current directory, handling duplicates per strategy."""
+  directory = os.path.dirname(src_path)
+  target_base = os.path.join(directory, new_filename)
+  if os.path.abspath(target_base) == os.path.abspath(src_path):
+    return src_path
+  target_path = handle_duplicates(target_base, strategy)
+  if target_path is None:
+    return None
+  os.makedirs(os.path.dirname(target_path), exist_ok=True)
+  try:
+    os.replace(src_path, target_path)
+  except OSError:
+    return None
+  return target_path
