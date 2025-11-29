@@ -45,6 +45,7 @@ class ConfigLoader:
 
     "duplicate_strategy": (str, False, "counter"),
     "ffmpeg_path": (str, False, None),
+    "ffprobe_path": (str, False, None),
     "camera_model_mapping": (dict, False, {}),
   }
 
@@ -115,10 +116,10 @@ class ConfigLoader:
         if root_key not in known_roots:
           errors.append(f"Unknown top-level key (strict mode): {root_key}")
 
-    ffmpeg_path = self.get("ffmpeg_path")
-    if ffmpeg_path:
-      if not os.path.isfile(ffmpeg_path):
-        errors.append(f"ffmpeg_path does not exist: {ffmpeg_path}")
+    for key in ("ffmpeg_path", "ffprobe_path"):
+      path_val = self.get(key)
+      if path_val and not os.path.isfile(path_val):
+        errors.append(f"{key} does not exist: {path_val}")
 
     if errors:
       raise ConfigError("Configuration validation failed:\n" + "\n".join(errors))
@@ -168,7 +169,7 @@ class ConfigLoader:
     return out
 
   def _expand_paths(self, config: Dict[str, Any]) -> Dict[str, Any]:
-    path_keys = ["source_folder", "staging_folder", "log_file", "ffmpeg_path"]
+    path_keys = ["source_folder", "staging_folder", "log_file", "ffmpeg_path", "ffprobe_path"]
     base_dir = os.path.dirname(os.path.abspath(self.path))
     for pk in path_keys:
       raw = self._nested_get(config, pk)

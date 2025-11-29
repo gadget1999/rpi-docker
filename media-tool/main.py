@@ -311,15 +311,17 @@ def main():
     # Load configuration
     print(f"Loading configuration from: {config_path}")
     config = ConfigLoader(config_path)
+
+    # Configure FFmpeg binaries if overridden in config
+    FFmpegWrapper.configure(
+      config.get('ffmpeg_path'),
+      config.get('ffprobe_path')
+    )
     
     # Setup logger
     log_file = config.get('log_file')
     os.makedirs(os.path.dirname(log_file), exist_ok=True)
     logger = setup_logger(log_file)
-    
-    logger.info("=" * 80)
-    logger.info("Media Tool Started")
-    logger.info("=" * 80)
     
     # Get source folder and extensions
     source_folder = config.get('source_folder')
@@ -382,9 +384,7 @@ def main():
     print(f"Skipped:        {results['skipped']}")
     print(f"\nLog file: {log_file}")
     
-    logger.info("=" * 80)
     logger.info(f"Processing Complete - Summary: {results}")
-    logger.info("=" * 80)
     
     return 0 if results['error'] == 0 else 1
     

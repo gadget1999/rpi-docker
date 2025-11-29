@@ -19,7 +19,7 @@ class Video:
     from media.exceptions import MetadataError
     try:
       cmd = [
-        'ffprobe',
+        FFmpegWrapper.ffprobe_cmd,
         '-v', 'error',
         '-select_streams', 'v:0',
         '-show_entries', 'stream=width,height,codec_name,bit_rate,color_primaries,color_trc,colorspace',
@@ -112,13 +112,22 @@ class FFmpegWrapper:
   """
   Encapsulates ffmpeg/ffprobe subprocess logic for video processing.
   """
+  ffmpeg_cmd = 'ffmpeg'
+  ffprobe_cmd = 'ffprobe'
+
+  @classmethod
+  def configure(cls, ffmpeg_path: str = None, ffprobe_path: str = None) -> None:
+    if ffmpeg_path:
+      cls.ffmpeg_cmd = ffmpeg_path
+    if ffprobe_path:
+      cls.ffprobe_cmd = ffprobe_path
   @staticmethod
   def get_video_info(file_path: str) -> Dict:
     """Return video info: width, height, duration, bitrate, codec, color info."""
     from media.exceptions import MetadataError
     try:
       cmd = [
-        'ffprobe',
+        cls.ffprobe_cmd,
         '-v', 'error',
         '-select_streams', 'v:0',
         '-show_entries', 'stream=width,height,codec_name,bit_rate,color_primaries,color_trc,colorspace',
@@ -171,7 +180,7 @@ class FFmpegWrapper:
     codec = codec_params['codec']
     extra_args = codec_params.get('extra_args', [])
     temp_path = output_path + '.tmp'
-    cmd = ['ffmpeg', '-y', '-i', input_path]
+    cmd = [cls.ffmpeg_cmd, '-y', '-i', input_path]
     if codec == 'copy':
       cmd.extend(['-c:v', 'copy', '-c:a', 'copy'])
     else:

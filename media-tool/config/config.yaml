@@ -6,8 +6,9 @@ log_file: "/tmp/Import/media_tool.log"
 # Duplicate handling strategy: 'counter' (append _1, _2) or 'skip' (skip existing)
 duplicate_strategy: "skip"
 
-# Optional: path to FFmpeg executable if not in PATH
+# Optional: paths to FFmpeg/FFprobe executables if not in PATH
 # ffmpeg_path: "C:/ffmpeg/bin/ffmpeg.exe"
+# ffprobe_path: "C:/ffmpeg/bin/ffprobe.exe"
 
 # Camera model name mapping (to shorten long names in filenames)
 camera_model_mapping:
