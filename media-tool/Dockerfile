@@ -3,9 +3,8 @@ FROM gadget1999/rpi-python3:latest
 LABEL maintainer="gadget1999 <gadget1999@outlook.com>"
 LABEL Description="Media processing tool"
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends ffmpeg && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk update && \
+    apk add --no-cache ffmpeg
 
 COPY requirements.txt /
 RUN /opt/python3-ven/bin/pip3 install -r requirements.txt
