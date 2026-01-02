@@ -133,6 +133,26 @@ def apply_timestamp(path: str, dt: Optional[datetime], logger, context: str):
     })
 
 
+def remove_source_file(path: Optional[str], logger, context: str):
+  if not path:
+    return
+  try:
+    os.remove(path)
+    log_action(logger, {
+      'status': 'info',
+      'file': path,
+      'message': f'Removed source after {context}'
+    })
+  except FileNotFoundError:
+    return
+  except Exception as e:
+    log_action(logger, {
+      'status': 'warning',
+      'file': path,
+      'message': f'Failed to remove source ({context}): {e}'
+    })
+
+
 def process_photo(file_path: str, config: ConfigLoader, logger) -> dict:
   """Process a single photo file."""
   start_time = time.time()
@@ -226,6 +246,7 @@ def process_photo(file_path: str, config: ConfigLoader, logger) -> dict:
       'operations': ['resize', 'rename', 'copy'],
       'elapsed_ms': elapsed_ms
     })
+    remove_source_file(file_path, logger, 'photo-success')
     
     return {'status': 'success', 'path': final_path}
     
@@ -354,6 +375,7 @@ def process_video(file_path: str, config: ConfigLoader, logger) -> dict:
       'operations': operations,
       'elapsed_ms': elapsed_ms
     })
+    remove_source_file(file_path, logger, 'video-success')
     
     return {'status': 'success', 'path': final_path}
     
