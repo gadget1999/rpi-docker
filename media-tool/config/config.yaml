@@ -1,14 +1,14 @@
-# Media Tool Configuration
-source_folder: "/tmp/Import/Source"
-staging_folder: "/tmp/Import/Staging"
-log_file: "/tmp/Import/media_tool.log"
+# Media Tool Configuration (need to use -v to map to /Import)
+source_folder: "/Import/Source"
+staging_folder: "/Import/Staging"
+log_file: "/Import/media_tool.log"
 
 # Duplicate handling strategy: 'counter' (append _1, _2) or 'skip' (skip existing)
 duplicate_strategy: "skip"
 
 # Optional: paths to FFmpeg/FFprobe executables if not in PATH
-ffmpeg_path: "D:/Dropbox/Tools/Media/ffmpeg/bin/ffmpeg.exe"
-ffprobe_path: "D:/Dropbox/Tools/Media/ffmpeg/bin/ffprobe.exe"
+ffmpeg_path: "/usr/bin/ffmpeg"
+ffprobe_path: "/usr/bin/ffprobe"
 
 # Camera model name mapping (to shorten long names in filenames)
 camera_model_mapping:
