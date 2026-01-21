@@ -348,6 +348,7 @@ def process_video(file_path: str, config: ConfigLoader, logger) -> dict:
     #####################################################
     ## Skip resize video for now, need more research on latest iPhone videos
     #####################################################
+
     # Resize/convert video using FFmpegWrapper    
     #FFmpegWrapper.resize_video(file_path, final_path, target_width, target_height, max_bitrate, codec_params)
     
@@ -361,6 +362,7 @@ def process_video(file_path: str, config: ConfigLoader, logger) -> dict:
     #  bitrate_tol
     #)
 
+    copy_file(file_path, final_path)
     apply_timestamp(final_path, timestamp_dt, logger, 'output-video')
     
     elapsed_ms = int((time.time() - start_time) * 1000)
