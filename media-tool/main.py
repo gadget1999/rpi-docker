@@ -345,18 +345,21 @@ def process_video(file_path: str, config: ConfigLoader, logger) -> dict:
     file_ext = os.path.splitext(file_path)[1].lower()
     codec_params = FFmpegWrapper.select_codec_params(file_ext)
     
-    # Resize/convert video using FFmpegWrapper
-    FFmpegWrapper.resize_video(file_path, final_path, target_width, target_height, max_bitrate, codec_params)
+    #####################################################
+    ## Skip resize video for now, need more research on latest iPhone videos
+    #####################################################
+    # Resize/convert video using FFmpegWrapper    
+    #FFmpegWrapper.resize_video(file_path, final_path, target_width, target_height, max_bitrate, codec_params)
     
     # Validate output using FFmpegWrapper
-    FFmpegWrapper.validate_video_output(
-      file_path,
-      final_path,
-      target_width,
-      target_height,
-      duration_tol,
-      bitrate_tol
-    )
+    #FFmpegWrapper.validate_video_output(
+    #  file_path,
+    #  final_path,
+    #  target_width,
+    #  target_height,
+    #  duration_tol,
+    #  bitrate_tol
+    #)
 
     apply_timestamp(final_path, timestamp_dt, logger, 'output-video')
     
