@@ -121,8 +121,8 @@ class FFmpegWrapper:
       cls.ffmpeg_cmd = ffmpeg_path
     if ffprobe_path:
       cls.ffprobe_cmd = ffprobe_path
-  @staticmethod
-  def get_video_info(file_path: str) -> Dict:
+  @classmethod
+  def get_video_info(cls, file_path: str) -> Dict:
     """Return video info: width, height, duration, bitrate, codec, color info."""
     from media.exceptions import MetadataError
     try:
@@ -170,8 +170,8 @@ class FFmpegWrapper:
       return {'codec': 'flv', 'extra_args': []}
     return {'codec': 'copy', 'extra_args': []}
 
-  @staticmethod
-  def resize_video(input_path: str, output_path: str, target_width: int, target_height: int, max_bitrate: str, codec_params: Dict):
+  @classmethod
+  def resize_video(cls, input_path: str, output_path: str, target_width: int, target_height: int, max_bitrate: str, codec_params: Dict):
     """
     Use FFmpeg to resize/re-encode video with error handling.
     Writes to temp file, validates, then moves atomically.
