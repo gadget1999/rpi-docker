@@ -68,6 +68,9 @@ class Photo:
       if img.width <= max_width and img.height <= max_height:
         shutil.copy2(self.file_path, output_path)
         return
+      if os.path.getsize(self.file_path) < 2 * 1024 * 1024:
+        shutil.copy2(self.file_path, output_path)
+        return
       if img.format in ['HEIC', 'HEIF']:
         shutil.copy2(self.file_path, output_path)
         return
