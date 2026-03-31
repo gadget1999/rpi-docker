@@ -217,7 +217,7 @@ def process_photo(file_path: str, config: ConfigLoader, logger) -> dict:
     # Build staging path with YYYY/YYYY.MM structure
     year_folder = dt.strftime('%Y')
     month_folder = dt.strftime('%Y.%m')
-    staging_path = os.path.join(staging_folder, year_folder, month_folder, new_filename)
+    staging_path = os.path.join(staging_folder, "Photos", year_folder, month_folder, new_filename)
     
     # Handle duplicates
     final_path = handle_duplicates(staging_path, duplicate_strategy)
@@ -325,7 +325,7 @@ def process_video(file_path: str, config: ConfigLoader, logger) -> dict:
     # Build staging path with YYYY/YYYY.MM structure
     year_folder = dt.strftime('%Y')
     month_folder = dt.strftime('%Y.%m')
-    staging_path = os.path.join(staging_folder, year_folder, month_folder, new_filename)
+    staging_path = os.path.join(staging_folder, "Videos", year_folder, month_folder, new_filename)
     
     # Handle duplicates
     final_path = handle_duplicates(staging_path, duplicate_strategy)
